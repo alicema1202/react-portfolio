@@ -1,0 +1,689 @@
+/* ==================================================================
+   1) Global design tokens & base resets
+   ================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding-top: 0 !important;
+  overflow: hidden;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --subtle: #666;
+  --border: #e2e2e2;
+  --brand: #3b60ff;
+  --brand-accent: #ff6f3c;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --container: 1160px;
+  --dock-offset: 0px; /* width reserved for chatbot dock (desktop only) */
+}
+/* ==================================================================
+  2) Header & primary nav
+  ================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: saturate(180%) blur(12px);
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid var(--border);
+  transition: transform 0.35s ease, background 0.3s, width 0.3s ease;
+  width: calc(100vw - var(--dock-offset));
+  left: 0;
+}
+
+.site-header.is-absolute {
+  position: absolute;
+  width: calc(100vw - var(--dock-offset));
+  left: 0;
+}
+
+/* Header transparency variants */
+.site-header.is-clear {
+  background: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-header {
+    background: rgba(16, 18, 20, 0.75);
+  }
+}
+
+.site-header.is-hidden {
+  transform: translateY(-110%);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.header-nav a,
+.header-nav .nav-item > a {
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  position: relative;
+  line-height: 1.2;
+  padding: 0.4rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-nav a:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background: var(--brand);
+  transition: width 0.25s;
+}
+
+.header-nav a:hover:after,
+.header-nav a:focus:after {
+  width: 100%;
+}
+/* Dropdown */
+.nav-item {
+  position: relative;
+}
+
+.nav-item .caret {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Extend hover hit area below trigger to cover gap */
+.nav-item.has-dropdown {
+  /* remove extra bottom padding causing gap */
+  padding-bottom: 0;
+}
+
+.nav-item.has-dropdown:hover > .dropdown,
+.nav-item.has-dropdown:focus-within > .dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Remove margin gap; offset via translate so hover remains while moving cursor */
+.dropdown {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 2px);
+  min-width: 180px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  padding: 0.4rem 0.4rem;
+  display: grid;
+  gap: 2px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* Keep underline while dropdown is open (hover or keyboard focus within) */
+.nav-item.has-dropdown:hover > a:after,
+.nav-item.has-dropdown:focus-within > a:after {
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dropdown {
+    --card-bg: #1d2125;
+  }
+}
+
+.dropdown a {
+  padding: 0.55rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text);
+  position: relative;
+}
+
+.dropdown a:after {
+  display: none;
+}
+
+.dropdown a:hover {
+  background: var(--tag-bg, #f1f3f5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .dropdown a:hover {
+    --tag-bg: #2a2f36;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101214;
+    --text: #f5f7fa;
+    --subtle: #9aa0a6;
+    --border: #2a2f36;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ==================================================================
+  3) Layout helpers
+  ================================================================== */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: -1000px;
+  top: -1000px;
+}
+
+.skip-link:focus {
+  left: 0;
+  top: 0;
+  background: var(--brand);
+  color: #fff;
+  padding: 0.5rem 1rem;
+}
+
+/* ==================================================================
+  4) Hero
+  ================================================================== */
+.hero {
+  padding: clamp(4rem, 8vw, 7rem) 0 3rem;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-accent) 100%);
+  color: #fff;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  margin: 0 0 1rem;
+  letter-spacing: -1px;
+}
+
+.hero .accent {
+  display: block;
+  font-weight: 600;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  opacity: 0.85;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.lede {
+  font-size: 1.125rem;
+  max-width: 56ch;
+  margin: 0 0 2rem;
+}
+
+.cta-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.button {
+  --btn-bg: rgba(255, 255, 255, 0.15);
+  --btn-color: #fff;
+  text-decoration: none;
+  padding: 0.85rem 1.25rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: background 0.25s, transform 0.25s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.button.primary {
+  background: #fff;
+  color: var(--brand);
+  border-color: #fff;
+}
+
+.button.primary:hover {
+  background: #eef2ff;
+}
+
+/* ==================================================================
+  5) Home sections & grid
+  ================================================================== */
+main {
+  padding: 3rem 0 4rem;
+}
+
+.work-section + .work-section {
+  margin-top: 4rem;
+}
+
+.work-section h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.work-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.work-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+}
+
+@media (prefers-color-scheme: dark) {
+  .work-card {
+    --card-bg: #1d2125;
+  }
+}
+
+.work-card .card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.work-card .thumb {
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.work-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-card .card-body {
+  padding: 1rem 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.work-card h3 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.work-card .summary {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--subtle);
+  line-height: 1.4;
+}
+
+.tags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tags li {
+  background: var(--tag-bg, #f1f3f5);
+  color: #333;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tags li {
+    --tag-bg: #2a2f36;
+    color: #d5dadf;
+  }
+}
+
+.work-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.work-card:focus-within {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.site-footer {
+  padding: 2.5rem 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--subtle);
+}
+
+/* ==================================================================
+  6) App shell & Chatbot dock
+  ================================================================== */
+.app-shell {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  height: 100vh;
+}
+
+.app-main {
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overflow-x: hidden;
+}
+
+.chatbot-dock {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  width: 0;
+  transition: width 0.25s ease;
+  overflow: hidden;
+  z-index: 90;
+}
+
+.chatbot-dock.expanded {
+  width: min(420px, 38vw);
+}
+
+.chatbot-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.chatbot-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.chatbot-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.chatbot-body {
+  padding: 0.75rem;
+  overflow: auto;
+  height: 100%;
+}
+
+.chatbot-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+}
+
+/* Floating action button for chatbot (shifts left by --dock-offset when dock is open) */
+.chatbot-fab {
+  position: fixed;
+  right: calc(var(--dock-offset) + 20px);
+  bottom: 20px;
+  z-index: 120;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--brand);
+  color: #fff;
+  font-size: 24px;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: right 0.25s ease, transform 0.1s ease;
+}
+
+.chatbot-fab:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 980px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .chatbot-dock {
+    position: fixed;
+    right: 0;
+    top: 56px;
+    height: calc(100vh - 56px);
+    width: 0;
+    border-left: none;
+    box-shadow: var(--shadow-md);
+  }
+
+  .chatbot-dock.expanded {
+    width: min(420px, 90vw);
+  }
+}
+
+/* ==================================================================
+  7) Responsive adjustments
+  ================================================================== */
+@media (max-width: 680px) {
+  .hero {
+    padding-top: 3.5rem;
+  }
+
+  .cta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .work-grid {
+    gap: 1rem;
+  }
+}
+
+/* ==================================================================
+  8) Case study layout
+  ================================================================== */
+.case-study .case-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.case-study .case-aside {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  background: var(--card-bg, #fff);
+}
+
+@media (prefers-color-scheme: dark) {
+  .case-study .case-aside {
+    --card-bg: #1d2125;
+  }
+}
+
+.toc {
+  margin: 0;
+}
+
+.toc-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--subtle);
+  margin: 0 0 0.5rem;
+}
+
+.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.toc a {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.35rem 0.4rem;
+  border-radius: 6px;
+  display: block;
+}
+
+.toc a:hover {
+  background: var(--tag-bg, #f1f3f5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .toc a:hover {
+    --tag-bg: #2a2f36;
+  }
+}
+
+.toc a.active {
+  background: rgba(59, 96, 255, 0.12);
+  color: var(--brand);
+  font-weight: 700;
+}
+
+/* Anchor target offset to account for sticky headers (if added later) */
+:target {
+  scroll-margin-top: 80px;
+}
+
+@media (max-width: 980px) {
+  .case-study .case-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .case-study .case-aside {
+    position: static;
+    order: -1;
+  }
+}
+
+.case-study .cs-content section {
+  scroll-margin-top: 100px;
+  padding-block: 0.5rem 1.25rem;
+}
+
+.case-study .cs-figures {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.case-study img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  box-shadow: var(--shadow-sm);
+}
+
+.case-study figure {
+  margin: 0;
+}

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://kit.fontawesome.com/9dddffe1a8.js" crossorigin="anonymous"></script>
+<title>Alice Chatbot</title>
+<style>
+  /*
+   * SF Pro font (using bundled TTF; map to common weights)
+   */
+  @font-face {
+    font-family: 'SF Pro';
+    src: local('SF Pro'), local('SF Pro Text'), local('SFProText-Regular'), url('/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'SF Pro';
+    src: local('SF Pro Medium'), local('SFProText-Medium'), url('/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'SF Pro';
+    src: local('SF Pro Semibold'), local('SFProText-Semibold'), url('/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'SF Pro';
+    src: local('SF Pro Bold'), local('SFProText-Bold'), url('/fonts/SF-Pro.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  /*
+   * Theme variables
+   */
+  :root {
+    --bg-0: #17171c;
+    --bg-1: #0f1115;
+    --bg-2: #161a22;
+    --panel: #28272E;
+    --text: #e5e7eb;
+    --muted: #98a2b3;
+    --line: #242733;
+    --user: #1467cc;
+    --link: #7fb3ff;
+    --link-hover: #a8c9ff;
+  }
+
+  /*
+   * Layout base
+   */
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+  font-family: 'SF Pro', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+    background: var(--bg-0);
+    color: var(--text);
+    letter-spacing: -0.1px;
+  }
+  /* Auto-hide custom scrollbar for the chat area */
+  #chat::-webkit-scrollbar {
+    width: 6px;
+    z-index: 0;
+    background-color: transparent;
+  }
+  #chat::-webkit-scrollbar-track { background: transparent; }
+  #chat::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+    width: 4px;
+    opacity: 0;
+    transition: background-color .2s ease, opacity .2s ease;
+  }
+  /* Show thumb on hover or while scrolling */
+  #chat:hover::-webkit-scrollbar-thumb,
+  #chat.scrolling::-webkit-scrollbar-thumb {
+    background-color: rgb(90, 90, 90);
+    opacity: 1;
+  }
+  /* Firefox: hide by default, show when scrolling */
+  #chat { scrollbar-width: none; }
+  #chat.scrolling, #chat:hover { scrollbar-width: thin; }
+
+  #chat-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-1);
+    overflow: hidden;
+    border: none;
+  }
+
+  /*
+   * Header
+   */
+  #chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  }
+
+  .chat-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .chat-title { font-weight: 700; font-size: 18px; }
+
+  .chat-status {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 2s infinite;
+  }
+
+  /* Right-side icon button */
+  #chat-header .icon-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .05s ease;
+  }
+  #chat-header .icon-btn:hover { background: var(--bg-2); color: #cfd6e3; border-color: #2c3140; }
+  #chat-header .icon-btn:active { transform: translateY(1px); }
+  #chat-header .icon-btn i { font-size: 16px; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,1px,1px); white-space: nowrap; border: 0;
+  }
+
+  /* Tooltip */
+  .has-tooltip { position: relative; }
+  .tooltip {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: var(--bg-2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 10px 16px;
+    font-size: 13px;
+    line-height: 18px;
+    width: 70vw;
+    /* max-width: min(320px, 70vw); */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    opacity: 0;
+    transform: translateY(-4px);
+  pointer-events: none; /* never intercept clicks */
+    transition: opacity .12s ease, transform .12s ease;
+    white-space: normal;
+    z-index: 3;
+    text-align: left;
+  }
+  /* Show via hover/focus or explicit expanded state */
+  .has-tooltip[aria-expanded="true"] .tooltip,
+  /* .has-tooltip:hover .tooltip, */
+  .has-tooltip:focus .tooltip,
+  .has-tooltip:focus-visible .tooltip {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  /* When user explicitly toggles closed, suppress hover display until leave/blur */
+  /* .has-tooltip.suppressed .tooltip {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-4px) !important;
+  } */
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+
+  /*
+   * Chat area and messages
+   */
+  #chat {
+    flex: 1;
+    padding: 16px;
+    padding-bottom: 0;
+    overflow-y: auto;
+    background: var(--bg-1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .message {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 20px;
+    max-width: 85%;
+    width: fit-content;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+    padding: 8px 16px;
+    font-size: 15px;
+    line-height: 23px;
+  }
+
+  .bot {
+    background: var(--panel);
+    color: #e6eef6;
+    align-self: flex-start;
+    padding: 10px 16px;
+  }
+
+  .user {
+    background: var(--user);
+    color: #fff;
+    align-self: flex-end;
+    box-shadow: 0 6px 18px rgba(11, 36, 56, 0.35);
+  }
+
+  /* Links inside bubbles */
+  .bot a { color: var(--link); text-decoration: underline; }
+  .bot a:hover { color: var(--link-hover); }
+  .user a { color: #e8f3ff; text-decoration: underline; }
+  .user a:hover { color: #ffffff; }
+
+  /* Compact paragraph spacing inside bubbles */
+  .message p { margin: 12px 0; }
+  .message p:first-child { margin-top: 0; }
+  .message p:last-child { margin-bottom: 0; }
+
+  /*
+   * Loader
+   */
+  .loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .loader .dot {
+    width: 7px;
+    height: 7px;
+    background: #9aa4b2;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+
+  .loader .dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.8) translateY(-4px); opacity: 0.6; }
+    40% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes bounce {
+    0%, 70%,100% { transform: scale(1) translateY(0); opacity: 1; }
+    35% { transform: scale(1.1) translateY(-6px); opacity: 0.7; }
+  }
+
+  /* Shrink-wrap bot bubble while loading */
+  .message.bot:has(.loader) { display: inline-flex; padding: 8px 16px; height: 41px;}
+  .message.bot.loading { display: inline-flex; padding: 18px 16px; height: 41px;}
+
+  /*
+   * Input bar
+   */
+  .prompt-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0 16px;
+    /* margin: 16px; */
+    background: var(--bg-1);
+    border: none;
+  }
+  .prompt-heading {
+    margin: 0 0 6px 0;
+    color: var(--muted);
+    font-size: 15px;
+    /* line-height: 1.2; */
+    text-align: center;
+    /* font-weight: 600; */
+  }
+  .prompt-bar .chip {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  #input-container {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-1);
+    border-top: 1px solid var(--line);
+  }
+
+  #message {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    line-height: 25px;
+    background: var(--panel);
+    color: var(--text);
+    border-radius: 25px;
+    /* height: 44px; */
+  }
+  .chip:last-child {
+    margin-bottom: 16px;
+  }
+  #message::placeholder { color: #8a93a3; font-family: inherit; }
+
+  #send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: var(--user);
+    color: #fff;
+    cursor: pointer;
+    border-radius: 25px;
+    box-shadow: 0 6px 18px rgba(11, 36, 56, 0.35);
+    font-size: 15px;
+  }
+
+  #send:hover { background: #0f5bb7; transform: translateY(-1px); }
+  #send:disabled { opacity: .6; cursor: not-allowed; }
+
+  /*
+   * Welcome panel
+   */
+  .welcome {
+    margin: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #131722;
+    color: var(--text);
+    box-shadow: 0.5px -0.5px 1px rgb(55, 55, 55);
+  }
+
+  .welcome-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #e6eef6;
+  }
+
+  .welcome-subtle { color: #e6eef6; font-size: 14px; }
+
+  .prompt-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--panel); /* slightly lighter gray to pop */
+    border: 0px solid #2e2f2f; /* stronger contrast border */
+    color: #eef2f8;
+    font-size: 15px;
+    /* line-height: 25px; */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .15s ease, transform .05s ease, border-color .15s ease, box-shadow .15s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .chip:hover {
+    background: #343946;
+    border-color: #4b5670;
+    transform: translateY(-1px);
+  }
+
+  .chip:focus-visible {
+    outline: 2px solid #5a667e; /* gray focus ring */
+    outline-offset: 2px;
+  }
+  .chip:active { transform: translateY(1px); }
+
+  /*
+   * System message
+   */
+  .message.system {
+    display: block;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: none;
+    align-self: center;
+    max-width: none;
+    width: auto;
+  }
+
+  /*
+   * Custom cursor (mirrors bottom of home.css)
+   * Hide system cursor inside chatbot
+   */
+  /* body { cursor: none; }
+  * { cursor: none !important; } */
+
+  .custom-cursor {
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    transform: translate(0, -50%);
+    pointer-events: none;
+    z-index: 9999;
+
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: -3px 3px 20px rgba(38, 44, 75, 0.428);
+    border: 0.5px solid rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+
+    font-size: 14px;
+    line-height: 20px;
+    color: black;
+    font-family: 'SF Pro', sans-serif;
+    font-weight: 500 !important;
+    white-space: nowrap;
+
+    transition: width .15s ease, height .15s ease, padding .15s ease, border-radius .15s ease, opacity .1s ease, transform .15s ease;
+    transform-origin: left center;
+    opacity: 1 !important;
+    transform: translate(0, -50%) scaleX(1);
+    display: block !important;
+  }
+
+  .custom-cursor.outside { display: none !important; }
+
+  .custom-cursor.active {
+    opacity: 1;
+    height: auto;
+    padding: 6px 16px;
+    border-radius: 20px;
+    width: auto;
+    min-width: 15px;
+    transform: translate(0, -50%) scaleX(1);
+    transform-origin: left center;
+    animation: expandCursor .2s ease-out forwards;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  @keyframes expandCursor {
+    0% { transform: translate(0, -50%) scaleX(0); }
+    100% { transform: translate(0, -50%) scaleX(1); }
+  }
+
+  .cursor-text {
+    display: inline-flex;
+    align-items: center;
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform .3s ease, opacity .3s ease;
+  }
+
+  .custom-cursor.active .cursor-text {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .cursor-text .arrow {
+    font-size: 18px;
+    padding-left: 4px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .custom-cursor.hoverable {
+    opacity: .5 !important;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 50%;
+    transform: translate(0, -50%) scaleX(1);
+    transform-origin: left center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .custom-cursor.default {
+    opacity: 1;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    border-radius: 50%;
+    transform: translate(0, -50%) scaleX(1);
+    transform-origin: left center;
+  }
+</style>
+</head>
+<body>
+
+<div id="chat-container">
+  <div id="chat-header">
+    <img class="chat-avatar" src="/images/disneypic-small.png" alt="Bot avatar" onerror="this.style.display='none'">
+    <div class="chat-meta">
+      <div class="chat-title">Ma Bot ✨</div>
+      <div class="chat-status"><span class="status-dot" aria-hidden="true"></span>Always active</div>
+    </div>
+  <button id="chat-info" class="icon-btn has-tooltip" aria-describedby="chat-tooltip" aria-label="More info">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      <span class="sr-only">More info</span>
+      <span id="chat-tooltip" role="tooltip" class="tooltip">
+        This chatbot is trained on my portfolio to help you learn about my work. It’s a new feature and may occasionally make mistakes when responding, but feel free to explore and ask about my projects! Responses not recorded.
+      </span>
+    </button>
+  </div>
+  
+  <div id="chat"></div>
+  <div id="prompt-bar" class="prompt-bar" aria-label="Suggested prompts" role="list"></div>
+  <div id="input-container">
+  <input id="message" type="text" placeholder="Ask about my design work..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" autofocus>
+  <button id="send" aria-label="Send"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('message');
+const sendBtn = document.getElementById('send');
+const infoBtn = document.getElementById('chat-info');
+
+// --- Scrolling helpers to consistently reach the very bottom ---
+function scrollToBottom() {
+  if (!chat) return;
+  // Try both forms; browsers clamp appropriately
+  chat.scrollTop = chat.scrollHeight;
+  chat.scrollTop = chat.scrollHeight - chat.clientHeight;
+}
+
+function scheduleScrollToBottom() {
+  scrollToBottom();
+  // Next frame
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => scrollToBottom());
+  }
+  // Micro/macrotask ticks
+  setTimeout(scrollToBottom, 0);
+  setTimeout(scrollToBottom, 60);
+  // After fonts settle (avoids reflow height changes)
+  if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+    document.fonts.ready.then(() => scrollToBottom()).catch(() => {});
+  }
+}
+
+// --- Markdown rendering (safe + minimal) ---
+function escapeHTML(str) {
+  return str.replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[c]);
+}
+
+function sanitizeUrl(url) {
+  const u = (url || '').trim();
+  if (/^(https?:\/\/|mailto:)/i.test(u)) return u;
+  if (/^(\/|\.\/|\.\.\/)/.test(u)) return u; // allow relative
+  return '#';
+}
+
+function renderMarkdown(text) {
+  // Escape HTML first
+  let safe = escapeHTML(text);
+
+  // Links: [text](url)
+  safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, label, url) => {
+    const href = sanitizeUrl(url);
+    const lbl = escapeHTML(label);
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer nofollow">${lbl}</a>`;
+  });
+
+  // Bold: **text**
+  safe = safe.replace(/\*\*([\s\S]+?)\*\*/g, '<strong>$1</strong>');
+
+  // Auto-link plain emails and URLs outside existing anchors
+  const parts = safe.split(/(<a\b[^>]*>.*?<\/a>)/gis).map(seg => {
+    if (/^<a\b/i.test(seg)) return seg; // keep existing links untouched
+    let s = seg;
+    // Email autolink
+    s = s.replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, (email) => {
+      const href = 'mailto:' + email;
+      return `<a href="${href}">${email}</a>`;
+    });
+    // URL autolink (http, https, www.) with trailing punctuation handling
+    s = s.replace(/\b((?:https?:\/\/|www\.)[^\s<]+?)([).,!?:;]*)(?=\s|$)/gi, (full, url, trail) => {
+      let href = url;
+      if (/^www\./i.test(href)) href = 'https://' + href;
+      href = sanitizeUrl(href);
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer nofollow">${url}</a>${trail}`;
+    });
+    return s;
+  });
+
+  const joined = parts.join('');
+  // Paragraphs: split on 2+ newlines; convert single newlines to <br>
+  const blocks = joined
+    .split(/\n{2,}/)
+    .map(b => b.replace(/\n/g, '<br>'))
+    .filter(b => b.trim() !== '');
+  return blocks.length ? blocks.map(b => `<p>${b}</p>`).join('') : joined;
+}
+
+function typeText(el, text, options = {}) {
+  const { delay = 8, markdown = false } = options;
+  // Type word-by-word while preserving whitespace and newlines
+  return new Promise(resolve => {
+    const tokens = text.split(/(\s+)/); // keep spaces/newlines as tokens
+    let i = 0;
+    let buffer = '';
+    const timer = setInterval(() => {
+      if (i >= tokens.length) {
+        clearInterval(timer);
+        resolve();
+        return;
+      }
+      buffer += tokens[i++];
+      if (markdown) {
+        el.innerHTML = renderMarkdown(buffer);
+      } else {
+        el.textContent = buffer;
+      }
+      chat.scrollTop = chat.scrollHeight;
+    }, delay);
+  });
+}
+
+// --- Session-scoped chat history (persists across navigation, clears on window close) ---
+const HISTORY_KEY = 'chatHistory';
+
+function getHistory() {
+  try {
+    const raw = sessionStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function setHistory(list) {
+  try {
+    sessionStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch (_) {}
+}
+
+function addToHistory(role, content, options = {}) {
+  const { markStarted = true, clearPromptBar = true } = options;
+  const list = getHistory();
+  list.push({ role, content });
+  setHistory(list);
+  try {
+    if (markStarted) sessionStorage.setItem('chatStarted', 'true');
+    if (clearPromptBar) {
+      const bar = document.getElementById('prompt-bar');
+      if (bar) bar.innerHTML = '';
+    }
+  } catch (_) {}
+}
+
+function hasUserMessage() {
+  try {
+    return getHistory().some(item => item && item.role === 'user');
+  } catch (_) { return false; }
+}
+
+function renderMessage(role, content) {
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  if (role === 'bot') {
+    div.innerHTML = renderMarkdown(content);
+  } else {
+    div.textContent = content;
+  }
+  chat.appendChild(div);
+}
+
+function restoreHistory() {
+  const list = getHistory();
+  if (!Array.isArray(list) || list.length === 0) return;
+  // If welcome exists or chat has content, clear to avoid duplication
+  chat.innerHTML = '';
+  list.forEach(item => {
+    if (item && (item.role === 'user' || item.role === 'bot') && typeof item.content === 'string') {
+      renderMessage(item.role, item.content);
+    }
+  });
+  scheduleScrollToBottom();
+}
+
+// --- Welcome panel with sample prompts ---
+let welcomeEl = null;
+const SAMPLE_PROMPTS = [
+  "Can you summarize this page for me?",
+  "Tell me about one of your projects.",
+  "What are your favorite parts about design?"
+];
+
+function hideWelcome() {
+  const bar = document.getElementById('prompt-bar');
+  if (bar) bar.innerHTML = '';
+  if (welcomeEl && welcomeEl.parentNode) {
+    welcomeEl.parentNode.removeChild(welcomeEl);
+    welcomeEl = null;
+  }
+  try { sessionStorage.setItem('chatStarted', 'true'); } catch (_) {}
+}
+
+function renderWelcome() {
+  try { if (sessionStorage.getItem('chatStarted') === 'true') return; } catch (_) {}
+  if (chat.children.length > 0) return;
+
+  // Add a friendly bot message in the chat
+  const welcomeMsg = document.createElement('div');
+  welcomeMsg.className = 'message bot';
+  const welcomeText = `I'm Alice, a UX designer driven by impact and passionate about crafting scalable design systems, with a keen eye for visual detail. What would you like to know?`;
+  welcomeMsg.innerHTML = welcomeText;
+  chat.appendChild(welcomeMsg);
+  // Persist welcome in history but don't mark chat as started or clear the prompt bar yet
+  addToHistory('bot', welcomeText, { markStarted: false, clearPromptBar: false });
+
+  // Populate prompt bar with chips
+  populatePromptBar();
+
+  scheduleScrollToBottom();
+}
+
+function populatePromptBar() {
+  const bar = document.getElementById('prompt-bar');
+  if (!bar) return;
+  bar.innerHTML = `<div class="prompt-heading">Try these out:</div>` +
+    SAMPLE_PROMPTS
+      .map((p) => `<button type="button" role="listitem" class="chip" data-prompt="${p.replace(/"/g,'&quot;')}">${p}</button>`)
+      .join('');
+  bar.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const prompt = chip.getAttribute('data-prompt') || '';
+      if (prompt) {
+        input.value = prompt;
+        hideWelcome();
+        sendMessage();
+      }
+    });
+  });
+}
+
+async function sendMessage() {
+  const message = input.value.trim();
+  if (!message) return;
+  if (sendBtn.disabled) return; // prevent concurrent sends
+
+  // disable input during request
+  sendBtn.disabled = true;
+  input.disabled = true;
+
+  // Remove welcome, if present
+  hideWelcome();
+  // Tooltip is CSS-only; nothing to close
+
+  // Add user message to chat
+  const userDiv = document.createElement('div');
+  userDiv.className = 'message user';
+  userDiv.textContent = message;
+  chat.appendChild(userDiv);
+  // Save to history
+  addToHistory('user', message);
+
+  input.value = '';
+  scheduleScrollToBottom();
+
+  // Create bot placeholder with loader
+  const botDiv = document.createElement('div');
+  botDiv.className = 'message bot loading';
+  botDiv.innerHTML = '<span class="loader" aria-label="Bot is typing" role="status"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+  chat.appendChild(botDiv);
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    // Collect page context to help summarize the current page
+    const context = collectPageContext();
+    // Call your Vercel serverless function
+    const res = await fetch('https://www.alicemadesign.com/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, context })
+    });
+
+    if (!res.ok) throw new Error('Network response was not ok');
+    const data = await res.json();
+    const reply = (data && (data.reply ?? '')).toString().trim() || 'Sorry, something went wrong.';
+
+  // Replace loader with typed text (markdown-aware)
+  botDiv.classList.remove('loading');
+  botDiv.innerHTML = '';
+  const content = document.createElement('span');
+  botDiv.appendChild(content);
+  await typeText(content, reply, { delay: 15, markdown: true });
+  // Save bot reply to history
+  addToHistory('bot', reply);
+  } catch (err) {
+    console.error(err);
+    botDiv.classList.remove('loading');
+    botDiv.innerHTML = '';
+    botDiv.textContent = 'Error connecting to server.';
+    // Persist error so user sees it after navigation
+    addToHistory('bot', 'Error connecting to server.');
+    chat.scrollTop = chat.scrollHeight;
+  } finally {
+    // re-enable input
+    sendBtn.disabled = false;
+    input.disabled = false;
+    input.focus();
+  }
+}
+
+// Event listeners
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+// Restore history first; if none, render welcome
+document.addEventListener('DOMContentLoaded', () => {
+  updatePageContext(location.href);
+  restoreHistory();
+  if (getHistory().length === 0) {
+    renderWelcome();
+  } else {
+    // Only mark started (and hide prompt bar) if a user message exists
+    if (hasUserMessage()) {
+      try { sessionStorage.setItem('chatStarted', 'true'); } catch (_) {}
+    } else {
+      // History exists but no user messages yet (e.g., welcome only) — show prompt bar
+      populatePromptBar();
+    }
+  }
+  // Ensure we end up exactly at bottom after any late layout shifts
+  scheduleScrollToBottom();
+
+  // Focus the message input when chatbot opens
+  const focusInput = () => { try { input && input.focus({ preventScroll: true }); } catch(_) {} };
+  focusInput();
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(focusInput);
+  setTimeout(focusInput, 0);
+  setTimeout(focusInput, 80);
+  if (document.fonts && document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+    document.fonts.ready.then(focusInput).catch(() => {});
+  }
+
+  // Show scrollbar only while actively scrolling
+  let scrollHideT;
+  const onChatScroll = () => {
+    chat.classList.add('scrolling');
+    clearTimeout(scrollHideT);
+    scrollHideT = setTimeout(() => chat.classList.remove('scrolling'), 600);
+  };
+  chat.addEventListener('scroll', onChatScroll, { passive: true });
+
+  // Tooltip toggle: click to pin/unpin and allow clicking again to hide
+  if (infoBtn) {
+    infoBtn.setAttribute('aria-expanded', 'false');
+    infoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const expanded = infoBtn.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        // Hide and suppress hover until pointer leaves or loses focus
+        infoBtn.setAttribute('aria-expanded', 'false');
+        infoBtn.classList.add('suppressed');
+  // Remove focus so :focus rules don't re-show tooltip
+  try { infoBtn.blur(); } catch(_) {}
+      } else {
+        infoBtn.classList.remove('suppressed');
+        infoBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+    // Click anywhere else to hide and clear suppression
+    document.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t === infoBtn || (t instanceof Node && infoBtn.contains(t))) return;
+      infoBtn.setAttribute('aria-expanded', 'false');
+      infoBtn.classList.remove('suppressed');
+    });
+    // Press Escape to hide
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        infoBtn.setAttribute('aria-expanded', 'false');
+        infoBtn.classList.remove('suppressed');
+        try { infoBtn.blur(); } catch(_) {}
+      }
+    });
+  }
+});
+
+// --- Page context collection ---
+function collectPageContext() {
+  // Prefer parent document when embedded and same-origin
+  let rootDoc = document;
+  let rootLoc = location;
+  try {
+    if (window.parent && window.parent !== window) {
+      // Access may throw on cross-origin
+      if (window.parent.location && window.parent.location.origin === window.location.origin) {
+        rootDoc = window.parent.document;
+        rootLoc = window.parent.location;
+      }
+    }
+  } catch (_) { /* ignore cross-origin */ }
+
+  const url = (rootLoc && rootLoc.href) || '';
+  const title = (rootDoc && rootDoc.title) || '';
+  const metaDesc = (() => {
+    const el = rootDoc.querySelector('meta[name="description"]');
+    return el ? String(el.getAttribute('content') || '') : '';
+  })();
+  // Choose a primary content container
+  const chatContainer = rootDoc.getElementById('chat-container');
+  const candidates = Array.from(rootDoc.querySelectorAll('main, article, [role="main"], .case-study, #content, .content, .work, .portfolio'))
+    .filter(el => !chatContainer || !el.closest('#chat-container'));
+  // Pick the candidate with the most text
+  const pick = candidates.sort((a,b) => (b.innerText || '').length - (a.innerText || '').length)[0] || null;
+
+  // Headings from primary content when available
+  const headingRoot = pick || rootDoc;
+  const headings = Array.from(headingRoot.querySelectorAll('h1, h2, h3'))
+    .map(h => (h.textContent || '').trim())
+    .filter(Boolean)
+    .slice(0, 8);
+
+  // Raw text from primary content, fallback to body but exclude chat UI text
+  let text = '';
+  if (pick && pick.innerText) {
+    text = pick.innerText;
+  } else {
+    const bodyText = (rootDoc.body && rootDoc.body.innerText) ? rootDoc.body.innerText : '';
+    const chatText = chatContainer && chatContainer.innerText ? chatContainer.innerText : '';
+    text = bodyText.replace(chatText, '');
+  }
+  // Strip common chat UI noise just in case
+  text = text.replace(/Alice Assistant|Type a message|Send|Active now/gi, ' ');
+  text = text.replace(/\s+/g, ' ').trim();
+  // Limit snippet size to keep payload small
+  const snippet = text.slice(0, 1800);
+  return { url, title, description: metaDesc, headings, snippet };
+}
+
+// --- Page change tracking, system message, and re-render ---
+function getPageDescription(url) {
+  const ctx = collectPageContext();
+  const u = (() => { try { return new URL(url || ctx.url); } catch { return null; } })();
+  const path = u ? u.pathname : (ctx.url || '');
+  const headingStr = (ctx.headings || []).slice(0, 4).join(' • ');
+  const title = ctx.title || path || 'this page';
+  const desc = ctx.description || '';
+  const clean = (s) => String(s || '').replace(/\s+/g, ' ').replace(/[\u2014\u2013]/g, '-').trim();
+  return `${clean(title)} (${clean(path)})${desc ? ` - ${clean(desc)}` : ''}${headingStr ? ` - Headings: ${clean(headingStr)}` : ''}`;
+}
+
+function updatePageContext(url) {
+  try {
+    const u = new URL(url, location.origin);
+    const newPage = u.pathname;
+    const prev = sessionStorage.getItem('currentPage') || '';
+    if (newPage !== prev) {
+      sessionStorage.setItem('currentPage', newPage);
+      // Only add a system message if there's existing chat history to avoid hiding welcome on first visit
+      const hasHistory = (getHistory().length > 0);
+      if (hasHistory) {
+        const pageContext = getPageDescription(url);
+        addToHistory('system', `[Page changed to: ${pageContext}]`);
+      }
+    }
+  } catch (_) {
+    // ignore
+  }
+}
+</script>
+
+<!-- Custom Cursor inside chatbot
+<div class="custom-cursor"></div>
+<script defer src="/js/cursor.js"></script> -->
+
+</body>
+</html>

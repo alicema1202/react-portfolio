@@ -1,0 +1,52 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install deps",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Start dev server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Install react-router-dom",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install",
+				"react-router-dom@^6.23.1"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Restart dev server for routing",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}
