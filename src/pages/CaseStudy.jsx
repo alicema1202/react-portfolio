@@ -4,9 +4,14 @@ import { selectWork, otherWork } from '../data/work'
 import Carousel from '../components/Carousel'
 import InfoCards from '../components/InfoCards'
 import SiteFooter from '../components/SiteFooter'
+import GradualBlur from '../../Reactbits/GradualBlur/GradualBlur'
+import useRevealOnScroll from '../hooks/useRevealOnScroll'
+
 
 export default function CaseStudy() {
   const { id } = useParams()
+  // Initialize reveal-on-scroll for case study content
+  useRevealOnScroll()
   const all = [...selectWork, ...otherWork]
   const item = all.find(i => i.id === id)
   const [activeId, setActiveId] = useState('')
@@ -264,6 +269,16 @@ export default function CaseStudy() {
           </article>
         </div>
       </div>
+      <GradualBlur
+        target="parent"
+        position="bottom"
+        height="4rem"
+        strength={1}
+        divCount={5}
+        curve="bezier"
+        exponential={true}
+        opacity={1}
+      />
       <SiteFooter />
     </main>
   )

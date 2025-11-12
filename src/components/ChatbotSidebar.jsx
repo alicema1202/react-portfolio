@@ -5,6 +5,7 @@ import chatbotHtml from '../../includes/chatbot.html?raw'
 
 export default function ChatbotSidebar() {
   const [open, setOpen] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const panelRef = useRef(null)
   const closeBtnRef = useRef(null)
   const iframeRef = useRef(null)
@@ -17,12 +18,25 @@ export default function ChatbotSidebar() {
     }
   }, [open])
 
+  // Expose chat-open state to CSS for cross-component tweaks (e.g., header behavior)
+  useEffect(() => {
+    const root = document.documentElement
+    if (open) root.classList.add('chat-open')
+    else root.classList.remove('chat-open')
+    return () => root.classList.remove('chat-open')
+  }, [open])
+
   // Update CSS variable for dock offset in desktop layout
   useEffect(() => {
     const root = document.documentElement
     const computeWidth = () => {
-      const isDesktop = window.innerWidth > 980
-      const w = (open && isDesktop) ? Math.min(420, Math.floor(window.innerWidth * 0.38)) : 0
+      const vw = window.innerWidth
+      let w = 0
+      if (open) {
+        // Smaller drawer on small screens so it doesn't over-push content
+        if (vw <= 980) w = Math.min(360, Math.floor(vw * 0.7))
+        else w = Math.min(420, Math.floor(vw * 0.38))
+      }
       root.style.setProperty('--dock-offset', w + 'px')
     }
     computeWidth()
@@ -39,7 +53,9 @@ export default function ChatbotSidebar() {
 
   const srcDoc = useMemo(() => {
     const baseHref = `${window.location.origin}/includes/`
-    return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><base href="${baseHref}"></head><body>${chatbotHtml}</body></html>`
+    // Inline minimal CSS to prevent white flash before chatbot HTML/CSS hydrate
+    const inlineStyle = `<style>html,body{margin:0;background:#101214;color:#fff}</style>`
+    return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><base href="${baseHref}">${inlineStyle}</head><body>${chatbotHtml}</body></html>`
   }, [])
 
   // Build external page context from React state / DOM
@@ -137,13 +153,16 @@ export default function ChatbotSidebar() {
          */}
         {open && (
           <div className="chatbot-body">
+            {/* Dark preload overlay to avoid white flash */}
+            {!loaded && <div className="chatbot-preload" aria-hidden="true" />}
             <iframe
               title="Chatbot"
-              className="chatbot-frame"
+              className={`chatbot-frame ${loaded ? 'is-visible' : ''}`}
               srcDoc={srcDoc}
               sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
               ref={iframeRef}
               onLoad={() => {
+                setLoaded(true)
                 // Fallback: push context on load as well
                 const ctx = buildContext()
                 if (iframeRef.current && iframeRef.current.contentWindow) {
@@ -162,7 +181,11 @@ export default function ChatbotSidebar() {
         onClick={() => setOpen(prev => !prev)}
         title={open ? 'Close assistant' : 'Open assistant'}
       >
-        {open ? '×' : '💬'}
+        {open ? (
+          <span className="material-icons-round" aria-hidden="true">close</span>
+        ) : (
+          <span className="material-icons-round" aria-hidden="true">assistant</span>
+        )}
       </button>
     </>
   )

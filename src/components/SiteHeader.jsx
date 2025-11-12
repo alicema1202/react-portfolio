@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import GlassSurface from '../../Reactbits/GlassSurface/GlassSurface'
+
 
 export default function SiteHeader() {
   const [hidden, setHidden] = useState(false)
@@ -37,6 +39,23 @@ export default function SiteHeader() {
     target.addEventListener('scroll', onScroll, { passive: true })
     return () => target.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Lock scroll and normalize header visuals when mobile menu is open
+  useEffect(() => {
+    const root = document.documentElement
+    const appMain = document.querySelector('.app-main')
+    if (mobileOpen) {
+      root.classList.add('menu-open')
+      appMain?.classList.add('menu-open')
+    } else {
+      root.classList.remove('menu-open')
+      appMain?.classList.remove('menu-open')
+    }
+    return () => {
+      root.classList.remove('menu-open')
+      appMain?.classList.remove('menu-open')
+    }
+  }, [mobileOpen])
 
   // Show header immediately on route change; reset pastHero if at top
   useEffect(() => {
@@ -78,20 +97,23 @@ export default function SiteHeader() {
   }
 
   return (
-    <header className={`site-header ${hidden ? 'is-hidden' : ''} ${pastHero ? 'is-solid' : 'is-clear'} ${isHome ? 'is-absolute' : ''}`} role="navigation" aria-label="Primary">
+    <header className={`site-header ${hidden ? 'is-hidden' : ''} ${pastHero ? 'is-solid' : 'is-clear'} ${isHome ? 'is-absolute' : ''} ${mobileOpen ? 'is-menu-open' : ''}`} role="navigation" aria-label="Primary">
+      <GlassSurface 
+        displace={3}
+        distortionScale={-130}
+        redOffset={0}
+        greenOffset={10}
+        blueOffset={15}
+        brightness={50}
+        opacity={0.93}
+        blur={11}
+        mixBlendMode="multiply"
+        borderWidth={0}
+        backgroundOpacity={0.3}
+      >
+      </GlassSurface>
       <div className="container header-inner">
         <Link to="/" className="brand" aria-label="Home">Alice Ma</Link>
-        {/* Mobile menu toggle */}
-        <button
-          className={`menu-toggle ${mobileOpen ? 'is-open' : ''}`}
-          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-          aria-controls="primary-nav"
-          aria-expanded={mobileOpen ? 'true' : 'false'}
-          onClick={() => setMobileOpen(v => !v)}
-        >
-          <span className="bar" />
-          <span className="bar" />
-        </button>
         <nav
           id="primary-nav"
           className={`header-nav ${mobileOpen ? 'is-open' : ''}`}
@@ -122,7 +144,7 @@ export default function SiteHeader() {
               aria-expanded={dropdownOpen ? 'true' : 'false'}
               aria-controls="work-submenu"
             >
-              Work <span className="caret">▾</span>
+              Work <span className="material-icons-round caret" aria-hidden="true">expand_more</span>
             </a>
             <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}>  
               <a href="/visionfusion" onClick={handleNavClick}>VisionFusion</a>
@@ -135,6 +157,17 @@ export default function SiteHeader() {
           <a href="/#other-work" onClick={handleNavClick}>Resume</a>
           <a href="#contact" onClick={handleNavClick}>Contact</a>
         </nav>
+        {/* Mobile menu toggle moved to the right side */}
+        <button
+          className={`menu-toggle ${mobileOpen ? 'is-open' : ''}`}
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-controls="primary-nav"
+          aria-expanded={mobileOpen ? 'true' : 'false'}
+          onClick={() => setMobileOpen(v => !v)}
+        >
+          <span className="bar" />
+          <span className="bar" />
+        </button>
       </div>
     </header>
   )

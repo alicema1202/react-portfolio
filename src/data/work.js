@@ -1,12 +1,12 @@
 export const selectWork = [
   {
     id: 'visionfusion',
-    title: 'VisionFusion: Iterative AI Image Generation',
+    title: "Selectively editing AI-generated images with VisionFusion's Object Detection",
     initials: 'VF',
     summary: 'AI image generation concept enabling object-level combine & rearrange workflows for faster iteration.',
-    tags: ['AI', 'UX Research', 'Interaction Design'],
+    tags: ['Human-AI Interaction', '0 to 1'],
     url: '#',
-    image: 'https://www.alicemadesign.com/images/visionfusion-thumb.png',
+    video: 'static/images/visionfusion-thumb.mp4',
     sections: [
       { id: 'overview', title: 'Overview', headline: 'AI image generation lacks flexibility for iterative workflows', body: [
         'VisionFusion is an AI image generator concept focused on iterative manipulation instead of repeated blind re-prompting.',

@@ -1,10 +1,13 @@
 .light-rays-container {
-  width: 100%;
-  height: 100%;
-  position: absolute; /* scroll with section */
+  position: absolute; /* overlay entire viewport */
+  inset: 0;
+  width: 100vw;
+  /* Use modern viewport units to avoid mobile 100vh bugs */
+  height: 100vh;   /* fallback */
+  height: 100svh;  /* small viewport height (iOS/Chrome) */
+  height: 100dvh;  /* dynamic viewport height (newer browsers) */
   pointer-events: none;
-  top: 0;
-  left: 0;
-  z-index: 0; /* keep behind content */
-  overflow: hidden;
+  z-index: 140; /* above site content and header, below modal/menu overlays and grain */
+  /* overflow: hidden; */
+  mix-blend-mode: lighten;
 }
