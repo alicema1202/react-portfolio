@@ -18,7 +18,7 @@ export default function Hero() {
         <div className="container">
           {/* Incoming message bubble with inline emoji */}
           <div className="message incoming" id="hi-im-alice" aria-label="Intro message from Alice">
-            <div className="bubble" role="text">Hi, I'm Alice! <img className="emoji memoji" src="../images/memoji.png" alt="" aria-hidden="true" /></div>
+            <div className="bubble" role="text">Hi, I'm Alice! <img className="emoji memoji" src="static/images/memoji.png" alt="" aria-hidden="true" /></div>
           </div>
           <h1>
             User Experience Designer
