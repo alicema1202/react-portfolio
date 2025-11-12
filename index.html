@@ -10,8 +10,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <!-- <a class="skip-link" href="#main">Skip to content</a> -->
+  <!-- Initial fade overlay -->
+  <div id="initial-fade" aria-hidden="true"></div>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+  <script>
+    (function(){
+      const el = document.getElementById('initial-fade');
+      if (!el) return;
+      const remove = () => el.parentNode && el.parentNode.removeChild(el);
+      el.addEventListener('animationend', remove, { once: true });
+      // Fallback removal in case animation is disabled or interrupted
+      setTimeout(remove, 1200);
+    })();
+  </script>
 </body>
 </html>

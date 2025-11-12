@@ -1,5 +1,73 @@
 export const selectWork = [
   {
+    id: 'visionfusion',
+    title: 'VisionFusion: Iterative AI Image Generation',
+    initials: 'VF',
+    summary: 'AI image generation concept enabling object-level combine & rearrange workflows for faster iteration.',
+    tags: ['AI', 'UX Research', 'Interaction Design'],
+    url: '#',
+    image: 'https://www.alicemadesign.com/images/visionfusion-thumb.png',
+    sections: [
+      { id: 'overview', title: 'Overview', headline: 'AI image generation lacks flexibility for iterative workflows', body: [
+        'VisionFusion is an AI image generator concept focused on iterative manipulation instead of repeated blind re-prompting.',
+        { type: 'carousel', images: [
+          'https://www.alicemadesign.com/images/combine-elements.png',
+          'https://www.alicemadesign.com/images/rearrange-objects.png'
+        ], alt: 'VisionFusion core object manipulation features' },
+        { type: 'cards', items: [
+          { title: 'Pain Point', text: 'Whole-image regeneration wastes time and reduces control.' },
+          { title: 'Insight', text: 'Object-level iteration accelerates convergence.' },
+          { title: 'Goal', text: 'Shift user flow from prompt lottery to targeted refinement.' }
+        ]},
+        'It introduces object-level operations so users can selectively refine results (combine, rearrange, regenerate parts) to converge faster.'
+      ] },
+  { id: 'problem', title: 'Problem', headline: 'Users rely on trial-and-error prompt cycles with low control', body: [
+        'Current AI tools offer little mid-flight control: users endlessly regenerate entire images.',
+        'Low transparency and coarse granularity slow exploration and reduce creative confidence.'
+      ] },
+  { id: 'solution', title: 'Solution Concept', headline: 'Introduce object-level manipulation after generation', body: [
+        'Layer interactive object manipulation on top of generation: select objects across batches, merge into a composite, spatially rearrange with generative fill.',
+        'Shift from prompt lottery to targeted iteration loops.'
+      ], images: ['https://www.alicemadesign.com/images/combine-elements.png','https://www.alicemadesign.com/images/rearrange-objects.png'] },
+  { id: 'research', title: 'Research & Competitive Analysis', headline: 'Pain points: transparency, control, and time cost', body: [
+        'Pain points: transparency, control, time cost.',
+        'NightCafe vs DALL-E audit: breadth vs clarity; both lack seamless granular edit flows.'
+      ], images: ['https://www.alicemadesign.com/images/nightcafe-analysis.png','https://www.alicemadesign.com/images/dalle-analysis.webp'] },
+  { id: 'ideation', title: 'Ideation Directions', headline: 'Exploring factors, profiles, and object detection', body: [
+        'Prompt Factors: expose interpreted attributes for adjustment.',
+        'User History Profiles: reuse preference patterns.',
+        'Object Detection: detect & operate on discrete elements (lock, combine, regenerate).' 
+      ], images: ['https://www.alicemadesign.com/images/object-detection.png'] },
+  { id: 'wireframing', title: 'Wireframing Key Features', headline: 'Detailing combine, rearrange, and profile flows', body: [
+        'Feature 1.1 Combine objects across multiple generations to synthesize desired composition.',
+        'Feature 1.2 Rearrange & scale objects with generative fill maintaining visual coherence.',
+        'Preference profiles captured after sessions to influence future prompts.'
+      ], images: ['https://www.alicemadesign.com/images/object-detection-combine.png','https://www.alicemadesign.com/images/object-detection-rearrange.png','https://www.alicemadesign.com/images/user-history-profile.png'] },
+  { id: 'feedback', title: 'Mid-Project Feedback', headline: 'Feedback prioritized unique selective editing features', body: [
+        'Validated novelty of object-centric iteration; warned about over-investing in generic preference memory.',
+        'Prioritized selective editing interactions over broad personalization.'
+      ] },
+  { id: 'final', title: 'Final Concept Snapshot', headline: 'Generate → manipulate → refine loop accelerates iteration', body: [
+        'Integrated generate → select → combine/rearrange → refine loop improves speed & control.',
+        'Emphasis on visual feedback and low-friction micro-iteration.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-thumb.png'] },
+  { id: 'impact', title: 'Impact & Results', headline: 'Higher perceived control and faster convergence', body: [
+        'Benchmarked 4.7/5 vs Human-AI Interaction guidelines (concept evaluation).',
+        'Qualitative efficiency gains: fewer full re-prompts; higher perceived control.',
+        'Audience cited novelty in granular, object-level iteration workflow.'
+      ] },
+  { id: 'next', title: 'Future Development', headline: 'Evolve into full-featured generator & validate with users', body: [
+        'Expand to full generator: style transfer, background removal, richer selective editing.',
+        'Run usability tests with creatives to refine affordances & transparency cues.'
+      ] },
+  { id: 'learnings', title: 'Key Learnings', headline: 'Granular manipulation + feedback builds AI design trust', body: [
+        'Granular manipulation > repeated whole-image regeneration for creative flow.',
+        'Real-time visual feedback and control surfaces build trust with AI systems.',
+        'Designing AI tools means balancing automation with adjustable agency.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-logo.png'] }
+    ]
+  },
+  {
     id: 'cs-1',
     title: 'Onboarding Redesign',
     initials: 'OR',

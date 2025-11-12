@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 // Import raw HTML so we can embed it into an iframe srcDoc
 import chatbotHtml from '../../includes/chatbot.html?raw'
 
@@ -6,6 +7,8 @@ export default function ChatbotSidebar() {
   const [open, setOpen] = useState(false)
   const panelRef = useRef(null)
   const closeBtnRef = useRef(null)
+  const iframeRef = useRef(null)
+  const { pathname } = useLocation()
 
   useEffect(() => {
     if (open) {
@@ -39,6 +42,74 @@ export default function ChatbotSidebar() {
     return `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><base href="${baseHref}"></head><body>${chatbotHtml}</body></html>`
   }, [])
 
+  // Build external page context from React state / DOM
+  const buildContext = () => {
+    const title = document.title || ''
+    const metaDesc = document.querySelector('meta[name="description"]')?.getAttribute('content') || ''
+    // For case study pages, gather active item data if present
+    let headings = []
+    let snippet = ''
+    try {
+      const main = document.querySelector('main.case-study, main#main') || document.querySelector('main') || document.body
+      headings = Array.from(main.querySelectorAll('h1, h2')).map(h => h.textContent.trim()).filter(Boolean).slice(0,8)
+      const paragraphs = Array.from(main.querySelectorAll('p'))
+      snippet = paragraphs.map(p => p.textContent.trim()).join(' ').replace(/\s+/g,' ').slice(0, 2500)
+    } catch(_) {}
+    // Derive a friendly page label
+    let pageLabel = 'Home page'
+    if (pathname.startsWith('/case/')) {
+      // Try to read case study main title
+      const h1 = document.querySelector('main.case-study h1')
+      if (h1 && h1.textContent.trim()) pageLabel = h1.textContent.trim()
+      else pageLabel = 'Case Study'
+    } else if (pathname !== '/') {
+      pageLabel = title || pathname.replace(/\//g,' ').trim() || 'Page'
+    }
+    return {
+      url: window.location.href,
+      path: pathname,
+      title,
+      description: metaDesc,
+      headings,
+      snippet,
+      pageLabel,
+      ts: Date.now()
+    }
+  }
+
+  // Post context to iframe when opened or path changes
+  useEffect(() => {
+    if (!open) return
+  const send = () => {
+      const ctx = buildContext()
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+    // Use '*' because about:srcdoc has an opaque/null origin
+    iframeRef.current.contentWindow.postMessage({ type: 'PAGE_CONTEXT', payload: ctx }, '*')
+      }
+    }
+    // If iframe already loaded, send immediately; else wait for ready handshake
+    send()
+    const onMessage = (e) => {
+      // Accept only messages from the embedded iframe window
+      if (e.source !== iframeRef.current?.contentWindow) return
+      if (e.data && e.data.type === 'CHATBOT_READY') send()
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [open, pathname])
+
+  // Also periodically refresh context while open (captures dynamic changes)
+  useEffect(() => {
+    if (!open) return
+    const id = setInterval(() => {
+      const ctx = buildContext()
+      if (iframeRef.current && iframeRef.current.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ type: 'PAGE_CONTEXT', payload: ctx }, window.location.origin)
+      }
+    }, 10000) // every 10s
+    return () => clearInterval(id)
+  }, [open, pathname])
+
   return (
     <>
       <aside
@@ -71,6 +142,14 @@ export default function ChatbotSidebar() {
               className="chatbot-frame"
               srcDoc={srcDoc}
               sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
+              ref={iframeRef}
+              onLoad={() => {
+                // Fallback: push context on load as well
+                const ctx = buildContext()
+                if (iframeRef.current && iframeRef.current.contentWindow) {
+                  iframeRef.current.contentWindow.postMessage({ type: 'PAGE_CONTEXT', payload: ctx }, '*')
+                }
+              }}
             />
           </div>
         )}

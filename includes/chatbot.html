@@ -890,6 +890,16 @@ input.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); 
 
 // Restore history first; if none, render welcome
 document.addEventListener('DOMContentLoaded', () => {
+  // Notify parent window that iframe chatbot is ready to receive context
+  try { window.parent && window.parent !== window && window.parent.postMessage({ type: 'CHATBOT_READY' }, '*'); } catch(_) {}
+  // Seed page context using parent's location when available (avoid about:srcdoc)
+  try {
+    if (window.parent && window.parent !== window && window.parent.location) {
+      updatePageContext(window.parent.location.href);
+    } else {
+      updatePageContext(location.href);
+    }
+  } catch(_) { updatePageContext(location.href); }
   updatePageContext(location.href);
   restoreHistory();
   if (getHistory().length === 0) {
@@ -962,6 +972,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Page context collection ---
 function collectPageContext() {
+  // If an external context payload was provided by parent app (SPA route aware), prefer that.
+  try {
+    const ext = sessionStorage.getItem('pageContextExternal');
+    if (ext) {
+      const parsed = JSON.parse(ext);
+  if (parsed) return parsed;
+    }
+  } catch(_) { /* ignore */ }
   // Prefer parent document when embedded and same-origin
   let rootDoc = document;
   let rootLoc = location;
@@ -1018,7 +1036,8 @@ function getPageDescription(url) {
   const u = (() => { try { return new URL(url || ctx.url); } catch { return null; } })();
   const path = u ? u.pathname : (ctx.url || '');
   const headingStr = (ctx.headings || []).slice(0, 4).join(' • ');
-  const title = ctx.title || path || 'this page';
+  // Prefer explicit external pageLabel (e.g., "Home page" or case study title)
+  const title = ctx.pageLabel || ctx.title || path || 'this page';
   const desc = ctx.description || '';
   const clean = (s) => String(s || '').replace(/\s+/g, ' ').replace(/[\u2014\u2013]/g, '-').trim();
   return `${clean(title)} (${clean(path)})${desc ? ` - ${clean(desc)}` : ''}${headingStr ? ` - Headings: ${clean(headingStr)}` : ''}`;
@@ -1042,6 +1061,32 @@ function updatePageContext(url) {
     // ignore
   }
 }
+
+// --- External context bridge (parent SPA -> iframe) ---
+window.addEventListener('message', (e) => {
+  try {
+    // Accept messages from parent regardless of origin when sandboxed; srcdoc may report null origin
+    const data = e.data;
+    if (!data || typeof data !== 'object') return;
+    if (data.type === 'PAGE_CONTEXT' && data.payload) {
+      // Persist external context
+      sessionStorage.setItem('pageContextExternal', JSON.stringify(data.payload));
+      // Update page tracking (avoid duplicate system messages if path unchanged)
+      const url = data.payload.url || (window.parent && window.parent.location ? window.parent.location.href : location.href);
+      const prev = sessionStorage.getItem('currentPage') || '';
+      try {
+        const u = new URL(url, location.origin);
+        if (u.pathname !== prev) {
+          sessionStorage.setItem('currentPage', u.pathname);
+          if (getHistory().length > 0) {
+            const pageDesc = `${data.payload.pageLabel || data.payload.title || u.pathname} (${u.pathname})`;
+            addToHistory('system', `[Page changed to: ${pageDesc}]`);
+          }
+        }
+      } catch(_) {}
+    }
+  } catch(_) { /* swallow */ }
+});
 </script>
 
 <!-- Custom Cursor inside chatbot

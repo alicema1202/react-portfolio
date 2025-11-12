@@ -4,6 +4,8 @@ import { Link, useLocation } from 'react-router-dom'
 export default function SiteHeader() {
   const [hidden, setHidden] = useState(false)
   const [pastHero, setPastHero] = useState(false) // >=200px scrolled
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const lastY = useRef(0)
   const ticking = useRef(false)
   const scrollerRef = useRef(null)
@@ -39,10 +41,22 @@ export default function SiteHeader() {
   // Show header immediately on route change; reset pastHero if at top
   useEffect(() => {
     setHidden(false)
+    setMobileOpen(false)
+  setDropdownOpen(false)
     const scroller = document.querySelector('.app-main') || window
     const y = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
     setPastHero(y >= 200)
   }, [pathname])
+
+  // Close mobile menu when resizing above breakpoint
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 900 && mobileOpen) setMobileOpen(false)
+  if (window.innerWidth > 900 && dropdownOpen) setDropdownOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [mobileOpen])
 
   const handleNavClick = (e) => {
     const href = e.currentTarget.getAttribute('href') || ''
@@ -52,6 +66,7 @@ export default function SiteHeader() {
     const target = document.getElementById(id)
     if (!target) return
     e.preventDefault()
+    setMobileOpen(false)
     const scroller = document.querySelector('.app-main') || window
     const headerPad = 72
     const baseTop = scroller === window ? 0 : scroller.getBoundingClientRect().top
@@ -65,18 +80,59 @@ export default function SiteHeader() {
   return (
     <header className={`site-header ${hidden ? 'is-hidden' : ''} ${pastHero ? 'is-solid' : 'is-clear'} ${isHome ? 'is-absolute' : ''}`} role="navigation" aria-label="Primary">
       <div className="container header-inner">
-        <Link to="/" className="brand" aria-label="Home">UX Portfolio</Link>
-        <nav className="header-nav">
+        <Link to="/" className="brand" aria-label="Home">Alice Ma</Link>
+        {/* Mobile menu toggle */}
+        <button
+          className={`menu-toggle ${mobileOpen ? 'is-open' : ''}`}
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          aria-controls="primary-nav"
+          aria-expanded={mobileOpen ? 'true' : 'false'}
+          onClick={() => setMobileOpen(v => !v)}
+        >
+          <span className="bar" />
+          <span className="bar" />
+        </button>
+        <nav
+          id="primary-nav"
+          className={`header-nav ${mobileOpen ? 'is-open' : ''}`}
+          onClick={(e) => {
+            const a = e.target.closest('a')
+            if (!a) return
+            // If clicking the dropdown toggle on mobile, don't close the menu
+            if (window.innerWidth <= 900) {
+              const parent = a.parentElement
+              if (parent && parent.classList.contains('has-dropdown')) return
+            }
+            setDropdownOpen(false)
+            setMobileOpen(false)
+          }}
+        >
           <div className="nav-item has-dropdown">
-            <a href="/#selected-work" onClick={handleNavClick} aria-haspopup="true">
+            <a
+              href="/#selected-work"
+              onClick={(e) => {
+                if (window.innerWidth <= 900) {
+                  e.preventDefault()
+                  setDropdownOpen(o => !o)
+                } else {
+                  handleNavClick(e)
+                }
+              }}
+              aria-haspopup="true"
+              aria-expanded={dropdownOpen ? 'true' : 'false'}
+              aria-controls="work-submenu"
+            >
               Work <span className="caret">▾</span>
             </a>
-            <div className="dropdown">
-              <a href="/#selected-work" onClick={handleNavClick}>Selected work</a>
-              <a href="/#other-work" onClick={handleNavClick}>Other work</a>
+            <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}>  
+              <a href="/visionfusion" onClick={handleNavClick}>VisionFusion</a>
+              <a href="/#other-work" onClick={handleNavClick}>Pegasystems</a>
+              <a href="/#other-work" onClick={handleNavClick}>Seven Seas</a>
+              <a href="/#other-work" onClick={handleNavClick}>Kiosk on Tour</a>
             </div>
           </div>
           <a href="/#other-work" onClick={handleNavClick}>About</a>
+          <a href="/#other-work" onClick={handleNavClick}>Resume</a>
           <a href="#contact" onClick={handleNavClick}>Contact</a>
         </nav>
       </div>

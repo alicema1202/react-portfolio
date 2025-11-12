@@ -3,14 +3,18 @@ import WorkGrid from './WorkGrid'
 import { selectWork, otherWork } from '../data/work'
 
 export default function WorkSection({ variant, title, maxItems }) {
-  const items = variant === 'select' ? selectWork.slice(0, maxItems) : otherWork.slice(0, maxItems)
-  const sectionId = variant === 'select' ? 'selected-work' : 'other-work'
+  const isSelected = variant === 'select'
+  const defaultMax = isSelected ? 4 : 6
+  const limit = maxItems || defaultMax
+  const items = isSelected ? selectWork.slice(0, limit) : otherWork.slice(0, limit)
+  const sectionId = isSelected ? 'selected-work' : 'other-work'
+  const gridVariant = isSelected ? 'selected' : 'other'
 
   return (
     <section id={sectionId} className="work-section" aria-labelledby={`${sectionId}-title`}>
       <div className="container">
         <h2 id={`${sectionId}-title`}>{title}</h2>
-        <WorkGrid items={items} />
+        <WorkGrid items={items} variant={gridVariant} />
       </div>
     </section>
   )

@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { selectWork, otherWork } from '../data/work'
+import Carousel from '../components/Carousel'
+import InfoCards from '../components/InfoCards'
+import SiteFooter from '../components/SiteFooter'
 
 export default function CaseStudy() {
   const { id } = useParams()
@@ -10,6 +13,9 @@ export default function CaseStudy() {
   const lockRef = useRef(false)
   const positionsRef = useRef([])
   const scrollerRef = useRef(null)
+  const lastScrollYRef = useRef(0)
+  const scrollingUpRef = useRef(false)
+  const contentStartRef = useRef(0)
 
   if (!item) {
     return (
@@ -51,6 +57,20 @@ export default function CaseStudy() {
 
     computePositions()
 
+    const computeContentStart = () => {
+      const sc = scrollerRef.current || document.querySelector('.app-main') || window
+      const baseTop = sc === window ? 0 : sc.getBoundingClientRect().top
+      const scrollTop = sc === window ? (window.scrollY || window.pageYOffset) : sc.scrollTop
+      const content = document.querySelector('.case-study .cs-content')
+      if (content) {
+        const rect = content.getBoundingClientRect()
+        contentStartRef.current = rect.top - baseTop + scrollTop
+      } else {
+        contentStartRef.current = 0
+      }
+    }
+    computeContentStart()
+
     const headerOffset = 80 // px offset for sticky elements
     let ticking = false
 
@@ -61,6 +81,24 @@ export default function CaseStudy() {
           const list = positionsRef.current
           if (!list.length) { ticking = false; return }
           const y = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
+          // Detect scroll direction
+          const prevY = lastScrollYRef.current
+          const goingUp = y < prevY
+          if (goingUp !== scrollingUpRef.current) {
+            scrollingUpRef.current = goingUp
+            // Toggle class on aside to translate when scrolling up
+            const asideEl = document.querySelector('.case-study .case-aside')
+            if (asideEl) {
+              if (goingUp) asideEl.classList.add('scrolling-up')
+              else asideEl.classList.remove('scrolling-up')
+            }
+          }
+          // If we've reached or crossed the content start, remove translation to avoid top padding
+          const startY = Math.max(0, contentStartRef.current - 1) // small epsilon
+          if (y <= startY) {
+            const asideEl = document.querySelector('.case-study .case-aside')
+            if (asideEl) asideEl.classList.remove('scrolling-up')
+          }
           const viewportCenter = y + headerOffset + ((scroller === window ? window.innerHeight : scroller.clientHeight) - headerOffset) / 2
           let best = list[0]
           let bestDist = Number.POSITIVE_INFINITY
@@ -71,13 +109,14 @@ export default function CaseStudy() {
             if (dist < bestDist) { best = sec; bestDist = dist }
           }
           if (best?.id) setActiveId(best.id)
+          lastScrollYRef.current = y
           ticking = false
         })
         ticking = true
       }
     }
 
-    const onResize = () => { computePositions(); onScroll() }
+  const onResize = () => { computePositions(); computeContentStart(); onScroll() }
     scroller.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize)
     window.addEventListener('load', onResize)
@@ -97,6 +136,8 @@ export default function CaseStudy() {
     const initialHash = window.location.hash.replace('#','')
     if (sectionIds.includes(initialHash)) setActiveId(initialHash)
     else if (sectionIds[0]) setActiveId(sectionIds[0])
+  // Initialize scroll direction baseline
+  lastScrollYRef.current = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
     return () => {
       scroller.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
@@ -140,8 +181,8 @@ export default function CaseStudy() {
       else img.addEventListener('load', done, { once: true })
       img.addEventListener('error', done, { once: true })
     })
-    const t = window.setTimeout(() => computePositions(), 400)
-    return () => window.clearTimeout(t)
+  const t = window.setTimeout(() => { computePositions(); computeContentStart() }, 400)
+  return () => window.clearTimeout(t)
   }, [id, item?.sections])
 
   return (
@@ -181,8 +222,34 @@ export default function CaseStudy() {
           <article className="cs-content" style={{ maxWidth: '80ch' }}>
             {item.sections?.map(sec => (
               <section id={sec.id} key={sec.id}>
-                <h2>{sec.title}</h2>
-                {Array.isArray(sec.body) ? sec.body.map((p, i) => (<p key={i}>{p}</p>)) : (<p>{sec.body}</p>)}
+                {sec.headline ? (
+                  <>
+                    <p className="cs-section-label" aria-label="Section category">{sec.title.toUpperCase()}</p>
+                    <h2 className="cs-section-headline">{sec.headline}</h2>
+                    <hr className="cs-section-separator" />
+                  </>
+                ) : (
+                  <h2>{sec.title}</h2>
+                )}
+                {Array.isArray(sec.body) ? sec.body.map((block, i) => {
+                  if (typeof block === 'string') return (<p key={i}>{block}</p>)
+                  if (!block || typeof block !== 'object') return null
+                  switch (block.type) {
+                    case 'image':
+                      return (
+                        <figure key={i}>
+                          <img src={block.src} alt={block.alt || ''} />
+                          {block.caption ? <figcaption>{block.caption}</figcaption> : null}
+                        </figure>
+                      )
+                    case 'carousel':
+                      return (<Carousel key={i} images={block.images || []} alt={block.alt || ''} />)
+                    case 'cards':
+                      return (<InfoCards key={i} items={block.items || []} />)
+                    default:
+                      return null
+                  }
+                }) : (<p>{sec.body}</p>)}
                 {sec.images?.length ? (
                   <div className="cs-figures">
                     {sec.images.map((src, i) => (
@@ -197,6 +264,7 @@ export default function CaseStudy() {
           </article>
         </div>
       </div>
+      <SiteFooter />
     </main>
   )
 }
