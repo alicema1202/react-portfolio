@@ -11,6 +11,7 @@ export default function SiteHeader() {
   const lastY = useRef(0)
   const ticking = useRef(false)
   const scrollerRef = useRef(null)
+  const pastHeroRef = useRef(false)
   const { pathname } = useLocation()
   const isHome = pathname === '/'
 
@@ -25,9 +26,16 @@ export default function SiteHeader() {
           const goingDown = y > lastY.current
           const nearTop = y < 10
           if (nearTop) setHidden(false)
-          else if (goingDown && y > 200) setHidden(true)
+          else if (goingDown && y > 220) setHidden(true)
           else setHidden(false)
-          setPastHero(y >= 200)
+          // Hysteresis around 200px to avoid rapid toggle flicker
+          let nextPastHero = pastHeroRef.current
+          if (!pastHeroRef.current && y >= 220) nextPastHero = true
+          else if (pastHeroRef.current && y <= 180) nextPastHero = false
+          if (nextPastHero !== pastHeroRef.current) {
+            pastHeroRef.current = nextPastHero
+            setPastHero(nextPastHero)
+          }
           lastY.current = y
           ticking.current = false
         })
@@ -39,6 +47,14 @@ export default function SiteHeader() {
     target.addEventListener('scroll', onScroll, { passive: true })
     return () => target.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Expose a root class when past hero threshold to drive CSS hooks (e.g., show glass surface)
+  useEffect(() => {
+    const root = document.documentElement
+    if (pastHero) root.classList.add('past-hero')
+    else root.classList.remove('past-hero')
+  pastHeroRef.current = pastHero
+  }, [pastHero])
 
   // Lock scroll and normalize header visuals when mobile menu is open
   useEffect(() => {
@@ -64,7 +80,9 @@ export default function SiteHeader() {
   setDropdownOpen(false)
     const scroller = document.querySelector('.app-main') || window
     const y = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
-    setPastHero(y >= 200)
+  const initialPast = y >= 220 ? true : y <= 180 ? false : pastHeroRef.current
+  pastHeroRef.current = initialPast
+  setPastHero(initialPast)
   }, [pathname])
 
   // Close mobile menu when resizing above breakpoint
@@ -100,16 +118,16 @@ export default function SiteHeader() {
     <header className={`site-header ${hidden ? 'is-hidden' : ''} ${pastHero ? 'is-solid' : 'is-clear'} ${isHome ? 'is-absolute' : ''} ${mobileOpen ? 'is-menu-open' : ''}`} role="navigation" aria-label="Primary">
       <GlassSurface 
         displace={3}
-        distortionScale={-130}
+        distortionScale={-180}
         redOffset={0}
         greenOffset={10}
         blueOffset={15}
         brightness={50}
         opacity={0.93}
         blur={11}
-        mixBlendMode="multiply"
+        mixBlendMode="normal"
         borderWidth={0}
-        backgroundOpacity={0.3}
+        backgroundOpacity={0.6}
       >
       </GlassSurface>
       <div className="container header-inner">

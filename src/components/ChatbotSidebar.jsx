@@ -6,6 +6,10 @@ import chatbotHtml from '../../includes/chatbot.html?raw'
 export default function ChatbotSidebar() {
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [isWide, setIsWide] = useState(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return true
+    return window.matchMedia('(min-width: 700px)').matches
+  })
   const panelRef = useRef(null)
   const closeBtnRef = useRef(null)
   const iframeRef = useRef(null)
@@ -26,6 +30,25 @@ export default function ChatbotSidebar() {
     return () => root.classList.remove('chat-open')
   }, [open])
 
+  // Track viewport width: disable FAB and force-close chat below 700px
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 700px)')
+    const apply = () => setIsWide(!!mq.matches)
+    apply()
+    const handler = (e) => setIsWide(!!e.matches)
+    if (mq.addEventListener) mq.addEventListener('change', handler)
+    else if (mq.addListener) mq.addListener(handler) // Safari fallback
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', handler)
+      else if (mq.removeListener) mq.removeListener(handler)
+    }
+  }, [])
+
+  // Auto-close if width drops below threshold
+  useEffect(() => {
+    if (!isWide && open) setOpen(false)
+  }, [isWide, open])
+
   // Update CSS variable for dock offset in desktop layout
   useEffect(() => {
     const root = document.documentElement
@@ -40,11 +63,20 @@ export default function ChatbotSidebar() {
       root.style.setProperty('--dock-offset', w + 'px')
     }
     computeWidth()
+    // Treat open/close as a viewport resize so pages recalc layout/positions
+    // Use rAF to avoid re-entrancy into our own resize handler
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event('resize'))
+    })
+    // Also send a trailing resize after the CSS transition likely completes
+    const t = window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'))
+    }, 340)
     const onResize = () => {
       computeWidth()
     }
     window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    return () => { window.removeEventListener('resize', onResize); window.clearTimeout(t) }
   }, [open])
 
   const onKeyDown = (e) => {
@@ -173,20 +205,22 @@ export default function ChatbotSidebar() {
           </div>
         )}
       </aside>
-      <button
-        className="chatbot-fab"
-        aria-label={open ? 'Close assistant' : 'Open assistant'}
-        aria-controls="chatbot-panel"
-        aria-expanded={open}
-        onClick={() => setOpen(prev => !prev)}
-        title={open ? 'Close assistant' : 'Open assistant'}
-      >
-        {open ? (
-          <span className="material-icons-round" aria-hidden="true">close</span>
-        ) : (
-          <span className="material-icons-round" aria-hidden="true">assistant</span>
-        )}
-      </button>
+      {isWide && (
+        <button
+          className="chatbot-fab"
+          aria-label={open ? 'Close assistant' : 'Open assistant'}
+          aria-controls="chatbot-panel"
+          aria-expanded={open}
+          onClick={() => setOpen(prev => (isWide ? !prev : prev))}
+          title={open ? 'Close assistant' : 'Open assistant'}
+        >
+          {open ? (
+            <span className="material-icons-round" aria-hidden="true">close</span>
+          ) : (
+            <span className="material-icons-round" aria-hidden="true">assistant</span>
+          )}
+        </button>
+      )}
     </>
   )
 }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import LightRays from '../../Reactbits/LightRays/LightRays'
-import LiquidEther from '../../Reactbits/LiquidEther/LiquidEther'
-import Galaxy from '../../Reactbits/Galaxy/Galaxy'
-
+import BlurText from '../../Reactbits/BlurText/BlurText'
+const handleAnimationComplete = () => {
+  console.log('Animation completed!');
+};
 export default function Hero() {
   const [isNarrow, setIsNarrow] = useState(false)
 
@@ -24,14 +25,14 @@ export default function Hero() {
     <header className="hero" role="banner">
         <LightRays
           raysOrigin="top-right"
-          raysColor="#ffffffc5"
+          raysColor="#ffffffff"
           raysSpeed={1.5}
-          lightSpread={1.3}
-          rayLength={2.4}
+          lightSpread={1.2}
+          rayLength={2}
           followMouse={true}
           mouseInfluence={0.3}
           noiseAmount={0.1}
-          distortion={0.05}
+          distortion={0}
           className="custom-rays"
         />
         {/* <Galaxy 
@@ -55,9 +56,17 @@ export default function Hero() {
               <path d="M10.8817 18.1141C11.228 10.3128 11.0002 0.978607 11.0002 0.978607L23.3309 22.7538C17.8521 29.932 12.908 32.1775 0.210938 32.9612C7.37937 28.7654 10.5354 25.9154 10.8817 18.1141Z"/>
               </svg>
           </div>
-          <h1>
+          <BlurText
+            text={isNarrow ? 'UX Designer' : 'User Experience Designer'}
+            delay={30}
+            animateBy="letters"
+            direction="bottom"
+            onAnimationComplete={handleAnimationComplete}
+            className="title"
+          />
+          {/* <h1>
             {isNarrow ? 'UX Designer' : 'User Experience Designer'}
-          </h1>
+          </h1> */}
           <p className="lede">
             driven by <i>impact</i> and passionate about crafting <i>scalable design systems</i>, with a keen eye for <i>visual detail</i> and <i>precision</i>.
 

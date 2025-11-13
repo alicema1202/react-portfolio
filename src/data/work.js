@@ -1,9 +1,168 @@
 export const selectWork = [
   {
+  id: 'visionfusion',
+  title: "Selectively editing AI-generated images with VisionFusion's Object Detection",
+  initials: 'VF',
+  tags: ['Human-AI Interaction', '0 to 1'],
+  url: '#',
+  video: 'static/images/visionfusion-thumb.mp4',
+  sections: [
+    {
+      id: 'overview',
+      title: 'Overview',
+      headline: 'AI image generation lacks the flexibility for iterative design workflows',
+      body: [
+        'As AI image generation tools become increasingly popular and accessible, users are facing a growing problem: these tools often produce results that don’t match what they want, leading to frustration. Current tools lack flexibility and give users little control over the creative process. This forces users into a tedious cycle of regenerating images until they get something closer to what they actually need.',
+        { type: 'quote', text: 'How might we enable iterative design workflows in AI image generation?' }
+      ]
+    },
+    {
+      id: 'solution',
+      title: 'Solution',
+      headline: 'An AI image generator designed for iterative design and manipulation',
+      body: [
+        'VisionFusion combines AI image generation with two novel manipulation approaches, allowing users to generate images and then iterate on them by combining elements, rearranging objects, and refining compositions to achieve their creative vision.',
+        { type: 'video', src: 'static/images/visionfusion-demo.mov', alt: 'VisionFusion platform demo' },
+        { type: 'cards', items: [
+          { title: 'Combine Elements', text: 'Users can select their favorite objects from multiple generated images and combine them into a single image.' },
+          { title: 'Rearrange Objects', text: 'Users can select an object and move or adjust the size of it while the AI uses generative fill to adjust the composition.' }
+        ]}
+      ]
+    },
+    {
+      id: 'research',
+      title: 'User Research',
+      headline: 'Exploring the product space and existing research',
+      body: [
+        'Our research began by identifying core user pain points in AI image generation. We identified three main problems to focus on solving.',
+        { type: 'cards', items: [
+          { title: 'Transparency', text: 'Users can’t see how the AI interprets their prompts, making it confusing.' },
+          { title: 'User Control', text: 'Limited ability to fine-tune and adjust generated images.' },
+          { title: 'Time Spent', text: 'Lots of time spent regenerating images without getting what you want.' }
+        ]}
+      ]
+    },
+    {
+      id: 'competitive',
+      title: 'Competitive Analysis',
+      headline: 'Analyzing existing AI image generation platforms and their limitations',
+      body: [
+        'To understand what’s already out there, we analyzed two popular AI image generators:',
+        { type: 'cards', items: [
+          { title: 'NightCafe', text: '👍 Lots of editing features\n\n👎 Too many options, unclear interface, confusing prompts' },
+          { title: 'DALL-E', text: '👍 Simple interface, inpainting features\n\n👎 Limited control, unclear AI interpretation, lots of trial and error' }
+        ]},
+        { type: 'images', images: [
+          'https://www.alicemadesign.com/images/nightcafe-analysis.png',
+          'https://www.alicemadesign.com/images/dalle-analysis.webp'
+        ], alt: 'Competitive analysis of NightCafe and DALL-E' },
+        'Current selective editing capabilities rely on brush-based or prompt-based selections—both limited in flexibility and accuracy.'
+      ]
+    },
+    {
+      id: 'ideation',
+      title: 'Ideation',
+      headline: 'Imagining a workflow for better selective editing',
+      body: [
+        'We explored three distinct concepts to address the problem:',
+        { type: 'cards', items: [
+          { title: 'Prompt Factors', text: 'Users can see how their prompt is understood by the AI through key “factors” (e.g., color, style, objects) and adjust them.' },
+          { title: 'User History', text: 'AI system remembers a history of user preferences and allows them to copy these preferences to new prompts.' },
+          { title: 'Object Detection', text: 'AI automatically detects objects in the picture, letting users lock, combine, or selectively regenerate them.' }
+        ]},
+        { type: 'images', images: [
+          'https://www.alicemadesign.com/images/object-detection.png'
+        ], alt: 'Object detection concept sketches' },
+        'Using the Human-AI Interaction Guidelines (CHI 2019), we analyzed each concept’s strengths and weaknesses on a 5-point scale.'
+      ]
+    },
+    {
+      id: 'wireframing',
+      title: 'Wireframing',
+      headline: 'Wireframing for user history and object detection features',
+      body: [
+        'We refined our ideas into wireframes for the most promising features.',
+        { type: 'cards', items: [
+          { title: 'Feature 1.1 Object Detection — Combine', text: 'Users can select and combine objects from various AI-generated images to create new compositions.' },
+          { title: 'Feature 1.2 Object Detection — Rearrange', text: 'Users can rearrange and scale detected objects on a canvas with generative fill preserving coherence.' },
+          { title: 'Feature 2 — User Preference Profiles', text: 'AI generates a user profile after each project to adjust settings based on patterns in the user’s behavior.' }
+        ]},
+        { type: 'images', images: [
+          'https://www.alicemadesign.com/images/object-detection-combine.png',
+          'https://www.alicemadesign.com/images/object-detection-rearrange.png',
+          'https://www.alicemadesign.com/images/user-history-profile.png'
+        ]}
+      ]
+    },
+    {
+      id: 'feedback',
+      title: 'Mid-Project Feedback',
+      headline: 'Feedback prioritized unique selective editing features',
+      body: [
+        'We presented our initial concepts to a class of 30 students, along with our professor and TA, to validate direction and gather insights.',
+        { type: 'cards', items: [
+          { title: 'Research Existing Solutions', text: 'We need to explore CHI and related literature to ensure our concept is truly novel.' },
+          { title: 'Feature Prioritization', text: 'Preference profiles may already exist elsewhere — focus on unique selective editing features instead.' }
+        ]}
+      ]
+    },
+    {
+      id: 'final',
+      title: 'Final Design',
+      headline: 'VisionFusion: An AI image generator designed for iteration',
+      body: [
+        'VisionFusion combines AI image generation with powerful manipulation tools, enabling users to generate images and then iterate on them by combining elements, rearranging objects, and refining compositions.',
+        { type: 'cards', items: [
+          { title: 'Combine Elements', text: 'Users can select their favorite objects from multiple generated images and merge them into one.' },
+          { title: 'Rearrange Objects', text: 'Users can move and resize objects while the AI intelligently adjusts the rest of the image using generative fill.' }
+        ]},
+        { type: 'video', src: 'static/images/visionfusion-demo.mov', alt: 'Full demo of VisionFusion features' }
+      ]
+    },
+    {
+      id: 'impact',
+      title: 'Impact & Results',
+      headline: 'Measuring the success of VisionFusion',
+      body: [
+        'VisionFusion successfully addressed the key pain points identified in our research, providing users with powerful tools for iterative AI image generation and manipulation.',
+        { type: 'cards', items: [
+          { title: 'Novel Innovation', text: 'Introduces a new paradigm for iterative AI image workflows.' },
+          { title: 'Efficiency Gains', text: 'Users reached desired results faster by eliminating re-prompt cycles.' },
+          { title: 'Performance Score', text: '4.7/5 — based on Design Guidelines for Human-AI Interaction.' },
+          { title: 'Audience Approval', text: 'Audience found the concept effective for addressing current AI image generation challenges.' }
+        ]}
+      ]
+    },
+    {
+      id: 'next',
+      title: 'Next Steps',
+      headline: 'Future development and improvements',
+      body: [
+        'While VisionFusion successfully addresses current AI generation challenges, several areas for future development remain:',
+        { type: 'list', items: [
+          'Expand to a full-featured image generator with style transfer, background removal, and advanced editing tools.',
+          'Conduct user testing with creative professionals to refine the interface and add new interactions for iterative workflows.'
+        ]}
+      ]
+    },
+    {
+      id: 'learnings',
+      title: 'Takeaways',
+      headline: 'What I learned from this project',
+      body: [
+        { type: 'cards', items: [
+          { title: 'AI as a Creative Partner', text: 'Successful AI tools enhance creativity by giving users agency and control.' },
+          { title: 'Iteration is Key', text: 'Designers need tools that support iterative workflows without starting from scratch.' },
+          { title: 'Visual Feedback Matters', text: 'Clear visual feedback and real-time previews build user confidence and trust.' }
+        ]}
+      ]
+    }
+  ]},
+
+  {
     id: 'visionfusion',
     title: "Selectively editing AI-generated images with VisionFusion's Object Detection",
     initials: 'VF',
-    summary: 'AI image generation concept enabling object-level combine & rearrange workflows for faster iteration.',
     tags: ['Human-AI Interaction', '0 to 1'],
     url: '#',
     video: 'static/images/visionfusion-thumb.mp4',
@@ -68,92 +227,137 @@ export const selectWork = [
     ]
   },
   {
-    id: 'cs-1',
-    title: 'Onboarding Redesign',
-    initials: 'OR',
-    summary: 'Reduced time-to-value by 38% via progressive disclosure.',
-    tags: ['UX Strategy', 'IA', 'Experimentation'],
+    id: 'visionfusion',
+    title: "Selectively editing AI-generated images with VisionFusion's Object Detection",
+    initials: 'VF',
+    tags: ['Human-AI Interaction', '0 to 1'],
     url: '#',
-    image: '',
+    video: 'static/images/visionfusion-thumb.mp4',
     sections: [
-      { id: 'context', title: 'Context', body: [
-        'Legacy onboarding required nine mandatory fields before users could explore product value. Drop-off reached 62% by step three.',
-        'Stakeholders believed gathering rich data up front would improve personalization, but early friction prevented users from seeing core value.'
-      ], images: ['/case/placeholder-1.svg'] },
-      { id: 'problem', title: 'Problem', body: 'Users abandoned due to cognitive overload and lack of perceived progress. Business needed faster activation to unlock expansion.' },
-      { id: 'approach', title: 'Approach', body: [
-        'Audited funnel, ran journey mapping, and identified decision-heavy steps that overloaded new users.',
-        'Prototyped progressive disclosure with adaptive forms and inline guidance triggered by user intent.'
-      ], images: ['/case/placeholder-2.svg'] },
-      { id: 'experiments', title: 'Experiments', body: 'A/B tested form breakup (3 steps vs. legacy), microcopy variants, and optional vs mandatory profile fields.' },
-      { id: 'outcomes', title: 'Outcomes', body: [
-        'Time-to-first key action improved 38%. Completion rose from 38% to 74%.',
-        'Support tickets on setup decreased 21%, and qualitative feedback highlighted clearer progress cues.'
+      { id: 'overview', title: 'Overview', headline: 'AI image generation lacks flexibility for iterative workflows', body: [
+        'VisionFusion is an AI image generator concept focused on iterative manipulation instead of repeated blind re-prompting.',
+        { type: 'carousel', images: [
+          'https://www.alicemadesign.com/images/combine-elements.png',
+          'https://www.alicemadesign.com/images/rearrange-objects.png'
+        ], alt: 'VisionFusion core object manipulation features' },
+        { type: 'cards', items: [
+          { title: 'Pain Point', text: 'Whole-image regeneration wastes time and reduces control.' },
+          { title: 'Insight', text: 'Object-level iteration accelerates convergence.' },
+          { title: 'Goal', text: 'Shift user flow from prompt lottery to targeted refinement.' }
+        ]},
+        'It introduces object-level operations so users can selectively refine results (combine, rearrange, regenerate parts) to converge faster.'
       ] },
-      { id: 'learnings', title: 'Learnings', body: 'Reducing initial commitment and clarifying progress indicators drives activation. Adaptive help beats static docs.' }
+  { id: 'problem', title: 'Problem', headline: 'Users rely on trial-and-error prompt cycles with low control', body: [
+        'Current AI tools offer little mid-flight control: users endlessly regenerate entire images.',
+        'Low transparency and coarse granularity slow exploration and reduce creative confidence.'
+      ] },
+  { id: 'solution', title: 'Solution Concept', headline: 'Introduce object-level manipulation after generation', body: [
+        'Layer interactive object manipulation on top of generation: select objects across batches, merge into a composite, spatially rearrange with generative fill.',
+        'Shift from prompt lottery to targeted iteration loops.'
+      ], images: ['https://www.alicemadesign.com/images/combine-elements.png','https://www.alicemadesign.com/images/rearrange-objects.png'] },
+  { id: 'research', title: 'Research & Competitive Analysis', headline: 'Pain points: transparency, control, and time cost', body: [
+        'Pain points: transparency, control, time cost.',
+        'NightCafe vs DALL-E audit: breadth vs clarity; both lack seamless granular edit flows.'
+      ], images: ['https://www.alicemadesign.com/images/nightcafe-analysis.png','https://www.alicemadesign.com/images/dalle-analysis.webp'] },
+  { id: 'ideation', title: 'Ideation Directions', headline: 'Exploring factors, profiles, and object detection', body: [
+        'Prompt Factors: expose interpreted attributes for adjustment.',
+        'User History Profiles: reuse preference patterns.',
+        'Object Detection: detect & operate on discrete elements (lock, combine, regenerate).' 
+      ], images: ['https://www.alicemadesign.com/images/object-detection.png'] },
+  { id: 'wireframing', title: 'Wireframing Key Features', headline: 'Detailing combine, rearrange, and profile flows', body: [
+        'Feature 1.1 Combine objects across multiple generations to synthesize desired composition.',
+        'Feature 1.2 Rearrange & scale objects with generative fill maintaining visual coherence.',
+        'Preference profiles captured after sessions to influence future prompts.'
+      ], images: ['https://www.alicemadesign.com/images/object-detection-combine.png','https://www.alicemadesign.com/images/object-detection-rearrange.png','https://www.alicemadesign.com/images/user-history-profile.png'] },
+  { id: 'feedback', title: 'Mid-Project Feedback', headline: 'Feedback prioritized unique selective editing features', body: [
+        'Validated novelty of object-centric iteration; warned about over-investing in generic preference memory.',
+        'Prioritized selective editing interactions over broad personalization.'
+      ] },
+  { id: 'final', title: 'Final Concept Snapshot', headline: 'Generate → manipulate → refine loop accelerates iteration', body: [
+        'Integrated generate → select → combine/rearrange → refine loop improves speed & control.',
+        'Emphasis on visual feedback and low-friction micro-iteration.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-thumb.png'] },
+  { id: 'impact', title: 'Impact & Results', headline: 'Higher perceived control and faster convergence', body: [
+        'Benchmarked 4.7/5 vs Human-AI Interaction guidelines (concept evaluation).',
+        'Qualitative efficiency gains: fewer full re-prompts; higher perceived control.',
+        'Audience cited novelty in granular, object-level iteration workflow.'
+      ] },
+  { id: 'next', title: 'Future Development', headline: 'Evolve into full-featured generator & validate with users', body: [
+        'Expand to full generator: style transfer, background removal, richer selective editing.',
+        'Run usability tests with creatives to refine affordances & transparency cues.'
+      ] },
+  { id: 'learnings', title: 'Key Learnings', headline: 'Granular manipulation + feedback builds AI design trust', body: [
+        'Granular manipulation > repeated whole-image regeneration for creative flow.',
+        'Real-time visual feedback and control surfaces build trust with AI systems.',
+        'Designing AI tools means balancing automation with adjustable agency.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-logo.png'] }
     ]
   },
   {
-    id: 'cs-2',
-    title: 'Mobile Billing Flows',
-    initials: 'MB',
-    summary: 'Simplified payments across 12 locales.',
-    tags: ['Mobile', 'Payments', 'Accessibility'],
+    id: 'visionfusion',
+    title: "Selectively editing AI-generated images with VisionFusion's Object Detection",
+    initials: 'VF',
+    tags: ['Human-AI Interaction', '0 to 1'],
     url: '#',
-    image: '',
+    video: 'static/images/visionfusion-thumb.mp4',
     sections: [
-      { id: 'overview', title: 'Overview', body: [
-        'Fragmented billing UX caused confusion around tax, currency, and confirmation states.',
-        'Different providers presented inconsistent error surfaces and locale formatting.'
+      { id: 'overview', title: 'Overview', headline: 'AI image generation lacks flexibility for iterative workflows', body: [
+        'VisionFusion is an AI image generator concept focused on iterative manipulation instead of repeated blind re-prompting.',
+        { type: 'carousel', images: [
+          'https://www.alicemadesign.com/images/combine-elements.png',
+          'https://www.alicemadesign.com/images/rearrange-objects.png'
+        ], alt: 'VisionFusion core object manipulation features' },
+        { type: 'cards', items: [
+          { title: 'Pain Point', text: 'Whole-image regeneration wastes time and reduces control.' },
+          { title: 'Insight', text: 'Object-level iteration accelerates convergence.' },
+          { title: 'Goal', text: 'Shift user flow from prompt lottery to targeted refinement.' }
+        ]},
+        'It introduces object-level operations so users can selectively refine results (combine, rearrange, regenerate parts) to converge faster.'
       ] },
-      { id: 'research', title: 'Research', body: 'Shadowed checkout sessions, analyzed drop-offs, interviewed support agents handling payment friction.' },
-      { id: 'constraints', title: 'Constraints', body: 'Multiple payment providers; regulatory variance (VAT/GST); strict mobile performance budget.' },
-      { id: 'design', title: 'Design Strategy', body: [
-        'Unified summary screen, progressive validation, and locale-aware formatting.',
-        'Established a semantic error hierarchy to prioritize blockers and show inline recovery.'
-      ], images: ['/case/placeholder-1.svg'] },
-      { id: 'accessibility', title: 'Accessibility', body: 'Focus order tuned, announced inline errors via ARIA live regions, ensured color contrast and large tap targets.' },
-      { id: 'results', title: 'Results', body: 'Checkout completion up 15%. Error recovery time down 27%. Accessibility audit passed AA with 0 critical issues.' },
-    ]
-  },
-  {
-    id: 'cs-3',
-    title: 'Design System Foundations',
-    initials: 'DS',
-    summary: 'Tokenized design system with usage guidelines.',
-    tags: ['Design System', 'Tokens', 'Docs'],
-    url: '#',
-    image: '',
-    sections: [
-      { id: 'mission', title: 'Mission', body: [
-        'Create a scalable design system enabling consistency and speed for 7 product squads.',
-        'Balance constraints for accessibility, performance, and internationalization.'
+  { id: 'problem', title: 'Problem', headline: 'Users rely on trial-and-error prompt cycles with low control', body: [
+        'Current AI tools offer little mid-flight control: users endlessly regenerate entire images.',
+        'Low transparency and coarse granularity slow exploration and reduce creative confidence.'
       ] },
-      { id: 'inventory', title: 'Inventory', body: 'Audited 140+ unique color values, 22 button variants, inconsistent spacing rules.' },
-      { id: 'tokens', title: 'Tokens', body: [
-        'Defined semantic tokens (action-bg, surface-subtle) layered over raw primitives.',
-        'Mapped tokens to platform variables and set up theming hooks for dark mode.'
-      ], images: ['/case/placeholder-2.svg'] },
-      { id: 'components', title: 'Components', body: 'Refactored core primitives: Button, Input, Modal with accessibility and flexible composition.' },
-      { id: 'documentation', title: 'Documentation', body: 'Authored usage guidelines, anti-patterns, and adoption playbook in an internal portal.' },
-      { id: 'impact', title: 'Impact', body: 'PR review time dropped 18%. Visual regressions decreased notably. Onboarding new designers faster by ~30%.' }
-    ]
-  },
-  {
-    id: 'cs-4',
-    title: 'Prototyping for AI Feature',
-    initials: 'AI',
-    summary: 'Wizard-of-Oz tests for assisted authoring.',
-    tags: ['Prototyping', 'Research', 'AI'],
-    url: '#',
-    image: '',
-    sections: [
-      { id: 'goal', title: 'Goal', body: 'Validate desirability and trust signals for an AI-assisted writing helper.' },
-      { id: 'method', title: 'Method', body: 'Wizard-of-Oz prototype: human operator generated suggestions to simulate model outputs.' },
-      { id: 'trust', title: 'Trust & Friction', body: 'Iterated on disclosure patterns, model confidence badges, and opt-out controls.' },
-      { id: 'iterations', title: 'Iterations', body: 'Three rounds: raw inline suggestions → contextual panel → minimal inline with expand affordance.' },
-      { id: 'metrics', title: 'Metrics', body: 'Suggestion acceptance rate 62%. Perceived task time reduced subjectively by users.' },
-      { id: 'next', title: 'Next Phase', body: 'Integrate actual model, explore personalization, long-form drafting enhancements.' }
+  { id: 'solution', title: 'Solution Concept', headline: 'Introduce object-level manipulation after generation', body: [
+        'Layer interactive object manipulation on top of generation: select objects across batches, merge into a composite, spatially rearrange with generative fill.',
+        'Shift from prompt lottery to targeted iteration loops.'
+      ], images: ['https://www.alicemadesign.com/images/combine-elements.png','https://www.alicemadesign.com/images/rearrange-objects.png'] },
+  { id: 'research', title: 'Research & Competitive Analysis', headline: 'Pain points: transparency, control, and time cost', body: [
+        'Pain points: transparency, control, time cost.',
+        'NightCafe vs DALL-E audit: breadth vs clarity; both lack seamless granular edit flows.'
+      ], images: ['https://www.alicemadesign.com/images/nightcafe-analysis.png','https://www.alicemadesign.com/images/dalle-analysis.webp'] },
+  { id: 'ideation', title: 'Ideation Directions', headline: 'Exploring factors, profiles, and object detection', body: [
+        'Prompt Factors: expose interpreted attributes for adjustment.',
+        'User History Profiles: reuse preference patterns.',
+        'Object Detection: detect & operate on discrete elements (lock, combine, regenerate).' 
+      ], images: ['https://www.alicemadesign.com/images/object-detection.png'] },
+  { id: 'wireframing', title: 'Wireframing Key Features', headline: 'Detailing combine, rearrange, and profile flows', body: [
+        'Feature 1.1 Combine objects across multiple generations to synthesize desired composition.',
+        'Feature 1.2 Rearrange & scale objects with generative fill maintaining visual coherence.',
+        'Preference profiles captured after sessions to influence future prompts.'
+      ], images: ['https://www.alicemadesign.com/images/object-detection-combine.png','https://www.alicemadesign.com/images/object-detection-rearrange.png','https://www.alicemadesign.com/images/user-history-profile.png'] },
+  { id: 'feedback', title: 'Mid-Project Feedback', headline: 'Feedback prioritized unique selective editing features', body: [
+        'Validated novelty of object-centric iteration; warned about over-investing in generic preference memory.',
+        'Prioritized selective editing interactions over broad personalization.'
+      ] },
+  { id: 'final', title: 'Final Concept Snapshot', headline: 'Generate → manipulate → refine loop accelerates iteration', body: [
+        'Integrated generate → select → combine/rearrange → refine loop improves speed & control.',
+        'Emphasis on visual feedback and low-friction micro-iteration.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-thumb.png'] },
+  { id: 'impact', title: 'Impact & Results', headline: 'Higher perceived control and faster convergence', body: [
+        'Benchmarked 4.7/5 vs Human-AI Interaction guidelines (concept evaluation).',
+        'Qualitative efficiency gains: fewer full re-prompts; higher perceived control.',
+        'Audience cited novelty in granular, object-level iteration workflow.'
+      ] },
+  { id: 'next', title: 'Future Development', headline: 'Evolve into full-featured generator & validate with users', body: [
+        'Expand to full generator: style transfer, background removal, richer selective editing.',
+        'Run usability tests with creatives to refine affordances & transparency cues.'
+      ] },
+  { id: 'learnings', title: 'Key Learnings', headline: 'Granular manipulation + feedback builds AI design trust', body: [
+        'Granular manipulation > repeated whole-image regeneration for creative flow.',
+        'Real-time visual feedback and control surfaces build trust with AI systems.',
+        'Designing AI tools means balancing automation with adjustable agency.'
+      ], images: ['https://www.alicemadesign.com/images/visionfusion-logo.png'] }
     ]
   },
 ]

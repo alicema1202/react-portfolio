@@ -70,29 +70,9 @@
     color: var(--text);
     letter-spacing: -0.1px;
   }
-  /* Auto-hide custom scrollbar for the chat area */
-  #chat::-webkit-scrollbar {
-    width: 6px;
-    z-index: 0;
-    background-color: transparent;
-  }
-  #chat::-webkit-scrollbar-track { background: transparent; }
-  #chat::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 10px;
-    width: 4px;
-    opacity: 0;
-    transition: background-color .2s ease, opacity .2s ease;
-  }
-  /* Show thumb on hover or while scrolling */
-  #chat:hover::-webkit-scrollbar-thumb,
-  #chat.scrolling::-webkit-scrollbar-thumb {
-    background-color: rgb(90, 90, 90);
-    opacity: 1;
-  }
-  /* Firefox: hide by default, show when scrolling */
-  #chat { scrollbar-width: none; }
-  #chat.scrolling, #chat:hover { scrollbar-width: thin; }
+  /* Fully hide native scrollbar; overlay scrollbar handles visuals */
+  #chat { scrollbar-width: none; -ms-overflow-style: none; }
+  #chat::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
   #chat-container {
     width: 100%;
@@ -120,10 +100,11 @@
   }
 
   .chat-avatar {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     object-fit: cover;
+    overflow: visible;
   }
 
   .chat-title { font-weight: 700; font-size: 18px; }
@@ -556,16 +537,42 @@
     transform: translate(0, -50%) scaleX(1);
     transform-origin: left center;
   }
+
+  /* Overlay scrollbar for chat area */
+  #overlay-scrollbar {
+    position: absolute;
+    right: 5px;
+    /* top and bottom set dynamically by JS to avoid overlapping header/input */
+    width: 6px;
+    border-radius: 999px;
+    background: transparent;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s ease;
+  }
+  #overlay-scrollbar .thumb {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.35);
+    box-shadow: 0 1px 2px rgba(0,0,0,.25);
+    border: 1px solid rgba(0,0,0,0.2);
+    cursor: grab;
+  }
 </style>
 </head>
 <body>
 
 <div id="chat-container">
   <div id="chat-header">
-    <img class="chat-avatar" src="/static/images/disneypic-small.png" alt="Bot avatar">
+    <img class="chat-avatar" src="/static/images/profile-pic.png" alt="Bot avatar">
     <div class="chat-meta">
       <div class="chat-title">Ma Bot ✨</div>
-      <div class="chat-status"><span class="status-dot" aria-hidden="true"></span>Always active</div>
+      <div class="chat-status">Always active</div>
     </div>
   <button id="chat-info" class="icon-btn has-tooltip" aria-describedby="chat-tooltip" aria-label="More info">
       <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
@@ -582,6 +589,12 @@
   <input id="message" type="text" placeholder="Ask about my design work..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" autofocus>
   <button id="send" aria-label="Send"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i></button>
   </div>
+</div>
+
+<!-- Overlay scrollbar track for chat -->
+<div id="overlay-scrollbar" aria-hidden>
+  <div class="thumb"></div>
+  
 </div>
 
 <script>
@@ -784,7 +797,7 @@ function renderWelcome() {
   // Add a friendly bot message in the chat
   const welcomeMsg = document.createElement('div');
   welcomeMsg.className = 'message bot';
-  const welcomeText = `I'm Alice, a UX designer driven by impact and passionate about crafting scalable design systems, with a keen eye for visual detail. What would you like to know?`;
+  const welcomeText = `Alice is a UX designer driven by impact and passionate about crafting scalable design systems, with a keen eye for visual detail. I'm her AI assistant that can help you learn about her. What would you like to know?`;
   welcomeMsg.innerHTML = welcomeText;
   chat.appendChild(welcomeMsg);
   // Persist welcome in history but don't mark chat as started or clear the prompt bar yet
@@ -926,14 +939,105 @@ document.addEventListener('DOMContentLoaded', () => {
     document.fonts.ready.then(focusInput).catch(() => {});
   }
 
-  // Show scrollbar only while actively scrolling
+  // Show overlay scrollbar only initially and while actively scrolling
   let scrollHideT;
+  let initialReveal = true;
+  setTimeout(() => { initialReveal = false; applyOverlay(); }, 900);
   const onChatScroll = () => {
     chat.classList.add('scrolling');
     clearTimeout(scrollHideT);
-    scrollHideT = setTimeout(() => chat.classList.remove('scrolling'), 600);
+    scrollHideT = setTimeout(() => {
+      chat.classList.remove('scrolling');
+      applyOverlay();
+    }, 650);
+    requestAnimationFrame(applyOverlay);
   };
   chat.addEventListener('scroll', onChatScroll, { passive: true });
+
+  // --- Overlay scrollbar setup for #chat ---
+  const track = document.getElementById('overlay-scrollbar');
+  const thumb = track ? track.querySelector('.thumb') : null;
+  function computeDock() {
+    // Compute top/bottom to avoid header and input
+    const header = document.getElementById('chat-header');
+    const inputWrap = document.getElementById('input-container');
+    const top = ((header && header.getBoundingClientRect().height) || 56) + 8;
+    const bottom = ((inputWrap && inputWrap.getBoundingClientRect().height) || 72) + 8;
+    track.style.top = top + 'px';
+    track.style.bottom = bottom + 'px';
+  }
+  function applyOverlay() {
+    if (!track || !thumb || !chat) return;
+    const viewport = chat.clientHeight;
+    const content = chat.scrollHeight;
+    const scrollTop = chat.scrollTop;
+    const hasOverflow = content > viewport + 1;
+    const show = hasOverflow && (initialReveal || chat.classList.contains('scrolling'));
+    track.style.opacity = show ? '1' : '0';
+    track.style.pointerEvents = show ? 'auto' : 'none';
+    if (!hasOverflow) return;
+    const trackH = track.clientHeight;
+    const ratio = viewport / content;
+    const thumbH = Math.max(28, Math.floor(trackH * ratio));
+    const maxTop = Math.max(0, trackH - thumbH);
+    const scrollRatio = (content - viewport) > 0 ? (scrollTop / (content - viewport)) : 0;
+    const thumbTop = Math.min(maxTop, Math.max(0, Math.floor(scrollRatio * maxTop)));
+    thumb.style.height = thumbH + 'px';
+    thumb.style.transform = `translateY(${thumbTop}px)`;
+  }
+  function onResizeOverlay() {
+    computeDock();
+    requestAnimationFrame(applyOverlay);
+  }
+  computeDock();
+  applyOverlay();
+  window.addEventListener('resize', onResizeOverlay);
+  window.addEventListener('orientationchange', onResizeOverlay);
+  chat.addEventListener('scroll', () => requestAnimationFrame(applyOverlay), { passive: true });
+  // Observe chat DOM mutations to recalc when messages change
+  try {
+    const mo = new MutationObserver(() => requestAnimationFrame(applyOverlay));
+    mo.observe(chat, { childList: true, subtree: true });
+  } catch (_) {}
+  // Drag to scroll
+  if (thumb) {
+    let dragging = false;
+    let startY = 0;
+    let startScroll = 0;
+    thumb.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      startY = e.clientY;
+      startScroll = chat.scrollTop;
+      document.body.style.userSelect = 'none';
+      const onMove = (ev) => {
+        if (!dragging) return;
+        const trackH = track.clientHeight;
+        const currentThumbH = thumb.offsetHeight;
+        const maxThumbTop = Math.max(1, trackH - currentThumbH);
+        const delta = ev.clientY - startY;
+        const scrollPerPx = (chat.scrollHeight - chat.clientHeight) / maxThumbTop;
+        chat.scrollTop = startScroll + delta * scrollPerPx;
+      };
+      const onUp = () => {
+        dragging = false;
+        document.body.style.userSelect = '';
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+      };
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp, { once: true });
+    });
+  }
+  // Track click to jump
+  if (track) {
+    track.addEventListener('pointerdown', (e) => {
+      if (e.target === thumb) return;
+      const rect = track.getBoundingClientRect();
+      const clickY = e.clientY - rect.top;
+      const ratio = clickY / rect.height;
+      chat.scrollTop = (chat.scrollHeight - chat.clientHeight) * ratio;
+    });
+  }
 
   // Tooltip toggle: click to pin/unpin and allow clicking again to hide
   if (infoBtn) {

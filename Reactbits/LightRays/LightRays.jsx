@@ -56,6 +56,7 @@ const LightRays = ({
   const cleanupFunctionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const observerRef = useRef(null);
+  const visibleRef = useRef(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -63,9 +64,11 @@ const LightRays = ({
     observerRef.current = new IntersectionObserver(
       entries => {
         const entry = entries[0];
-        setIsVisible(entry.isIntersecting);
+        const visible = entry.isIntersecting;
+        visibleRef.current = visible;
+        setIsVisible(visible);
       },
-      { threshold: 0.1 }
+      { threshold: 0.01 }
     );
 
     observerRef.current.observe(containerRef.current);
@@ -79,11 +82,11 @@ const LightRays = ({
   }, []);
 
   useEffect(() => {
-    if (!isVisible || !containerRef.current) return;
+    if (!containerRef.current) return;
 
-    if (cleanupFunctionRef.current) {
-      cleanupFunctionRef.current();
-      cleanupFunctionRef.current = null;
+    // If already initialized, do nothing
+    if (rendererRef.current && uniformsRef.current && meshRef.current) {
+      return;
     }
 
     const initializeWebGL = async () => {
@@ -264,6 +267,12 @@ void main() {
           return;
         }
 
+        // If offscreen, keep RAF alive but skip rendering to avoid tearing down canvas
+        if (!visibleRef.current) {
+          animationIdRef.current = requestAnimationFrame(loop);
+          return;
+        }
+
         uniforms.iTime.value = t * 0.001;
 
         if (followMouse && mouseInfluence > 0.0) {
@@ -326,21 +335,7 @@ void main() {
         cleanupFunctionRef.current = null;
       }
     };
-  }, [
-    isVisible,
-    raysOrigin,
-    raysColor,
-    raysSpeed,
-    lightSpread,
-    rayLength,
-    pulsating,
-    fadeDistance,
-    saturation,
-    followMouse,
-    mouseInfluence,
-    noiseAmount,
-    distortion
-  ]);
+  }, []);
 
   useEffect(() => {
     if (!uniformsRef.current || !containerRef.current || !rendererRef.current) return;

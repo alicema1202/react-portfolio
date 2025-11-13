@@ -7,6 +7,7 @@ import './styles.css'
 
 import SiteHeader from './components/SiteHeader'
 import ChatbotSidebar from './components/ChatbotSidebar'
+import OverlayScrollbar from './components/OverlayScrollbar'
 
 function RootLayout() {
   const { pathname } = useLocation()
@@ -17,10 +18,11 @@ function RootLayout() {
   }, [pathname])
   return (
     <div className="app-shell">
-      <div className="app-main">
+  <div className="app-main">
         <SiteHeader />
         <Outlet />
       </div>
+  <OverlayScrollbar targetSelector=".app-main" watchKey={pathname} />
       <ChatbotSidebar />
     </div>
   )

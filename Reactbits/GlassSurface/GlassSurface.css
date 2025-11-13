@@ -10,11 +10,20 @@
   justify-content: center;
   overflow: hidden;
   transition: opacity 0.26s ease-out;
-  width: 100%!important;
-  max-width: 1160px;
+  width: calc(100% - 48px)!important;
+  max-width: 1112px;
   height: 100%!important;
   border-radius: 50px!important;
+  padding: 0 24px;
+  /* promote to its own layer to avoid cross-layer flashes */
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
+
+/* Hidden by default; will fade in after scrolling beyond hero threshold */
+.glass-surface { opacity: 0; pointer-events: none; }
+html.past-hero .glass-surface { opacity: 1; pointer-events: auto; }
 
 .glass-surface__filter {
   width: 100%;
@@ -39,13 +48,11 @@
 }
 
 .glass-surface--svg {
-  background: light-dark(hsl(0 0% 100% / var(--glass-frost, 0)), hsl(0 0% 0% / var(--glass-frost, 0)));
+  background: hsl(0 0% 10% / var(--glass-frost, 0));
   backdrop-filter: var(--filter-id, url(#glass-filter)) saturate(var(--glass-saturation, 1));
   box-shadow:
-    0 0 2px 1px light-dark(color-mix(in oklch, black, transparent 85%), color-mix(in oklch, white, transparent 65%))
-      inset,
-    0 0 10px 4px light-dark(color-mix(in oklch, black, transparent 90%), color-mix(in oklch, white, transparent 85%))
-      inset,
+    -1px -1px 0px rgba(255, 255, 255, 0.2),
+    1px 1px 0px rgba(255, 255, 255, 0.2),
     0px 4px 16px rgba(17, 17, 26, 0.05),
     0px 8px 24px rgba(17, 17, 26, 0.05),
     0px 16px 56px rgba(17, 17, 26, 0.05),
@@ -55,7 +62,7 @@
 }
 
 .glass-surface--fallback {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(12px) saturate(1.8) brightness(1.1);
   -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -68,7 +75,7 @@
 
 @media (prefers-color-scheme: dark) {
   .glass-surface--fallback {
-    background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.644);
     backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
     -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
     border: 1px solid rgba(255, 255, 255, 0.2);

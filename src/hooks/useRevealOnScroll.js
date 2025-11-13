@@ -21,6 +21,8 @@ export default function useRevealOnScroll() {
     const selector = [
       'h1','h2','h3','h4','p','li','figure','section','article',
       '.button','.work-card','.info-card','.carousel','.hero .message',
+      // Ensure thumbnails in work cards reveal as well
+      '.work-card .thumb', '.work-card .thumb img', '.work-card .thumb-video',
       '.cs-content'
     ].join(',')
 
@@ -67,7 +69,22 @@ export default function useRevealOnScroll() {
         }
         ;(el.matches('.cs-content') ? ioContainer : ioDefault).observe(el)
       })
-      if (prepared.length) applyStagger(prepared)
+      if (prepared.length) {
+        applyStagger(prepared)
+        // If some elements are already in view at load, add visible on next frame
+        // to ensure the initial translateY/opacity state paints first.
+        const scrollerRect = scroller ? scroller.getBoundingClientRect() : { top: 0, bottom: window.innerHeight }
+        requestAnimationFrame(() => {
+          prepared.forEach(el => {
+            const r = el.getBoundingClientRect()
+            const inView = r.bottom > scrollerRect.top && r.top < scrollerRect.bottom
+            if (inView) {
+              el.classList.add('reveal-visible')
+              ;(el.matches('.cs-content') ? ioContainer : ioDefault).unobserve(el)
+            }
+          })
+        })
+      }
     }
 
     init()

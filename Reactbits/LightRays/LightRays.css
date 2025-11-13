@@ -1,5 +1,5 @@
 .light-rays-container {
-  position: absolute; /* overlay entire viewport */
+  position: absolute; /* persist across scroll */
   inset: 0;
   width: 100vw;
   /* Use modern viewport units to avoid mobile 100vh bugs */
@@ -10,4 +10,7 @@
   z-index: 140; /* above site content and header, below modal/menu overlays and grain */
   /* overflow: hidden; */
   mix-blend-mode: lighten;
+  will-change: opacity, transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
