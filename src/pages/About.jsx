@@ -4,7 +4,7 @@ import Masonry from '../../Reactbits/Masonry/Masonry'
 import LightRays from '../../Reactbits/LightRays/LightRays'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import SiteFooter from '../components/SiteFooter'
-import { useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import TiltedCard from '../../Reactbits/TiltedCard/TiltedCard';
 import VideoPlayerCard from '../components/VideoPlayerCard'
 

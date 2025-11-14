@@ -2,7 +2,8 @@ import React from 'react'
 import GradualBlur from '../../Reactbits/GradualBlur/GradualBlur'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import SiteFooter from '../components/SiteFooter'
-import { useNavigate } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
+
 
 export default function Contact() {
   return (

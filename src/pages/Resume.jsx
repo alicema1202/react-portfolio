@@ -1,10 +1,10 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
 import SiteFooter from '../components/SiteFooter'
 import CaseAside from '../components/CaseAside'
 import GradualBlur from '../../Reactbits/GradualBlur/GradualBlur'
 import LightRays from '../../Reactbits/LightRays/LightRays' 
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 
 export default function Resume() {
   useRevealOnScroll()
