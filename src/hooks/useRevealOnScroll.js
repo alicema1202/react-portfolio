@@ -20,7 +20,11 @@ export default function useRevealOnScroll() {
 
     const selector = [
       'h1','h2','h3','h4','p','li','figure','section','article',
-      '.button','.work-card','.info-card','.carousel','.hero .message',
+      '.button','.work-card','.info-card','.carousel','.hero .message','hr','img','.meta-item',
+      // Video player card + key inner elements to ensure visible reveal
+      '.video-player-card',
+      '.video-player-card .vpc-video-wrapper',
+      '.video-player-card .glass-surface',
       // Ensure thumbnails in work cards reveal as well
       '.work-card .thumb', '.work-card .thumb img', '.work-card .thumb-video',
       '.cs-content'

@@ -8,11 +8,24 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/index-DjBALG2s.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BcQvNgfk.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/index-BHEg536c.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-COyaB_fN.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <!-- <a class="skip-link" href="#main">Skip to content</a> -->
+  <!-- Initial fade overlay -->
+  <div id="initial-fade" aria-hidden="true"></div>
   <div id="root"></div>
+  <script>
+    (function(){
+      const el = document.getElementById('initial-fade');
+      if (!el) return;
+      const remove = () => el.parentNode && el.parentNode.removeChild(el);
+      el.addEventListener('animationend', remove, { once: true });
+      // Fallback removal in case animation is disabled or interrupted
+      setTimeout(remove, 1200);
+    })();
+  </script>
 </body>
 </html>

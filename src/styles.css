@@ -1,6 +1,10 @@
 
 /* Font imports */
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@font-face {
+  font-family: 'SF Pro'; /* Define a name for your font */
+  src: url('../public/static/fonts/SF-Pro.ttf') format('truetype'); /* Specify font file paths and formats */
+}
 
 /* ==================================================================
    1) Global design tokens & base resets
@@ -30,9 +34,11 @@ body {
   line-height: 1.5;
   padding-top: 0 !important;
   overflow: hidden;
-
+  background: linear-gradient(3deg, var(--bg) 30%, var(--brand-dark) 150%);
 }
-
+.case-study:not(.resume) {
+  background: var(--bg)
+}
 /* Subtle grain overlay across all pages */
 body::before {
   content: '';
@@ -44,7 +50,7 @@ body::before {
   background-repeat: repeat;
   background-position: center;
   background-size: 60vw auto; /* adjust to taste; keep tile subtle */
-  opacity: 0.3; /* subtle grain strength */
+  opacity: 0.5; /* subtle grain strength */
   mix-blend-mode: soft-light;
 }
 
@@ -52,10 +58,11 @@ body::before {
   --bg: #101214;
   --lightbg: #282e35;
   --text: #ffffff;
-  --body-text: #ffffffb9;
+  --body-text: #ffffffcb;
   --subtle: #9aa0a6;
-  --border: #2a2f36;
-  --brand: rgb(66, 91, 173);
+  --border: #ffffff32;
+  --brand: rgba(66, 91, 173, 0.843);
+  --brand-dark: rgba(48, 68, 132, 0.843);
   --brand-accent: rgb(23,23,28);
   --card-bg: #1d2125;
   --tag-bg: #2a2f36;
@@ -68,7 +75,7 @@ body::before {
   --container: 1160px;
   --dock-offset: 0px; /* width reserved for chatbot dock (desktop only) */
   /* Typography stacks */
-  --font-sans: -apple-system, system-ui, "SF Pro Text", "SF Pro Display", Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "SF Pro", sans-serif;
   --font-serif: "Instrument Serif", Georgia, Cambria, "Times New Roman", Times, serif;
 }
 #main {
@@ -78,6 +85,12 @@ body::before {
 /* Typography utilities */
 .font-sans { font-family: var(--font-sans); font-feature-settings: 'kern' 1, 'liga' 1; }
 .font-serif { font-family: var(--font-serif); font-variant-ligatures: common-ligatures; }
+p {
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: 200;
+  color: var(--body-text);
+}
 /* Reveal-on-scroll animation */
 .reveal-up { opacity: 0; transform: translateY(50px); filter: blur(10px);will-change: transform, opacity; }
 .reveal-visible { opacity: 1; transform: translateY(0); filter: blur(0); transition: transform .5s ease, opacity .5s ease, filter 0.5s ease; transition-delay: var(--reveal-delay, 0ms); }
@@ -172,7 +185,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 
 .brand {
   font-weight: 400;
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-size: 26px;
   text-decoration: none;
   color: var(--text);
@@ -355,7 +368,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
   gap: 4px;
   font-size: 16px;
   font-weight: 200;
-  letter-spacing: 0.05ch;
+  /* letter-spacing: 0.05ch; */
   text-transform: uppercase;
   opacity: 0.7;
   transition: all 0.3s ease;
@@ -418,7 +431,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
   top: 100%; /* sit flush to trigger; bridge handles spacing */
   min-width: 180px;
   background: var(--card-bg, #fff);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   padding: 0.4rem 0.4rem;
@@ -439,13 +452,14 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 
 
 .dropdown a {
-  padding: 0.55rem 0.65rem;
+  padding: 12px 16px;
   border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 16px;
   text-decoration: none;
   color: var(--text);
   position: relative;
+  text-transform: none;
+  transition: all 0.1s ease;
 }
 
 .dropdown a:after {
@@ -460,9 +474,12 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 /* ==================================================================
   3) Layout helpers
   ================================================================== */
+.header-inner.container {
+  height: 100%;
+}
 .container {
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   z-index: 1;
   position: relative;
   max-width: var(--container);
@@ -513,10 +530,11 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 .hero h1, .hero .title {
   margin: 0;
   letter-spacing: -1px;
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-size: 80px;
   font-weight: 300;
   line-height: 90px;
+  color: var(--text)
 }
 
 .hero .container { 
@@ -553,7 +571,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
   color: var(--body-text)
 }
 .lede i {
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-size: 42px;
   animation: flicker 1.5s infinite alternate;
 }
@@ -671,7 +689,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 .work-section h2, .work-card h3 {
   font-size: 32px!important;
   line-height: 38px;
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-weight: 400;
   margin: 0 0 1.5rem;
 }
@@ -877,7 +895,7 @@ html.past-hero .header-inner { padding: 0 60px!important; }
 .footer-links a {
   font-size: 32px;
   color: var(--body-text);
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   text-decoration: none;
   line-height: 42px;
 }
@@ -1099,7 +1117,7 @@ main.case-study {
 article, .case-study{
   font-size: 18px;
   line-height: 28px;
-  font-weight: 250;
+  font-weight: 200;
   color: var(--body-text)
 }
 .cs-hero {
@@ -1176,7 +1194,7 @@ article, .case-study{
 }
 /* meta description */
 .meta-item div:nth-child(2) {
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-size: 30px;
   line-height: 40px;
   margin: 0;
@@ -1198,11 +1216,13 @@ article, .case-study{
   position: sticky;
   top: 1rem;
   align-self: start;
-  transition: transform 0.3s ease;
+  padding-top: 0; /* default; JS adjusts via --aside-offset when scrolling up */
+  transition: padding-top 0.3s ease;
+  padding-bottom: 64px;
 }
 
 .case-study .case-aside.scrolling-up {
-  transform: translateY(87px);
+  padding-top: var(--aside-offset, 87px);
 }
 
 .case-study .case-aside { --card-bg: #1d2125; }
@@ -1217,7 +1237,7 @@ article, .case-study{
   letter-spacing: 0.12em;
   color: var(--subtle);
   margin: 0;
-  padding: 64px 0;
+  padding: 64px 0 48px 0;
   margin-left: -8px;
 }
 
@@ -1236,6 +1256,7 @@ article, .case-study{
   display: block;
   opacity: 0.4;
   transition: all 0.1s ease;
+  text-transform: capitalize;
 }
 
 .toc a:hover { --tag-bg: #2a2f36; }
@@ -1260,7 +1281,9 @@ article, .case-study{
     order: -1;
   }
 }
-
+.cs-content {
+  margin-bottom: 64px;
+}
 .case-study .cs-content section {
   scroll-margin-top: 100px;
   /* padding-block: 0.5rem 1.25rem; */
@@ -1279,7 +1302,7 @@ article, .case-study{
 
 .cs-section-headline {
   font-size: 48px;
-  font-family: "Instrument Serif", serif;
+  font-family: var(--font-serif);
   font-weight: 200;
   line-height: normal;
   margin: 0 0 0.85rem;
@@ -1287,11 +1310,11 @@ article, .case-study{
   color: var(--text)
 }
 
-.cs-section-separator {
+.section-separator {
   border: 0;
   height: 1px;
   background: var(--border);
-  margin: 0 0 1.1rem;
+  margin: 16px 0 16px;
 }
 .case-study .cs-figures {
   display: grid;
@@ -1328,3 +1351,255 @@ article, .case-study{
 .info-card-title { margin:0; font-size:1rem; letter-spacing:-0.5px; }
 .info-card-text { margin:0; font-size:.85rem; line-height:1.4; color: var(--subtle); }
 .info-card-meta { margin:0; font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; opacity:.7; }
+
+/* Resume-specific styling */
+.resume-section-headline {
+  font-size: 18px !important;
+  line-height: 28px !important;
+  font-weight: normal !important;
+  text-transform: uppercase !important;
+  margin-top: 0 !important;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.resume-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.resume-entry-title {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+}
+.entry-headline {
+  font-family: "Instrument Serif", serif !important;
+  font-size: 40px !important;
+  line-height: normal !important;
+  font-weight: normal !important;
+  margin: 0 !important;
+  color: var(--text);
+}
+.entry-role {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  line-height: 40px;
+  font-weight: 100;
+  font-style: italic;
+  margin: 0 !important;
+}
+.resume-entry-setting {
+  opacity: 0.7;
+  margin: 0;
+}
+.resume-entry-bullets {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* About Page */
+.about-section {
+  display: flex;
+  gap: 64px;
+}
+.about .container {
+  margin-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+/* =============================================================
+   Video Player Card Component
+   ============================================================= */
+.video-player-card .glass-surface{
+  width: calc(100% - 32px - 32px)!important;
+  height: fit-content!important;
+  bottom: 0;
+  margin: 32px!important;
+  border-radius: 16px!important;
+}
+.video-player-card:hover {
+  transform: rotate(-3deg);
+}
+.video-player-card { 
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  backdrop-filter: blur(10px) saturate(140%);
+  width: 100%;
+  transition: all .3s ease;
+  height: fit-content;
+  background: #343a40;
+  padding: 16px;
+  border-radius: 32px;
+  box-shadow: 
+  1px -1px 1px rgba(255, 255, 255, 0.25);
+}
+.progress-and-time {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+.buttons-group {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+/* .video-player-card[data-playing='true'] {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 4px 24px -6px rgba(0,0,0,0.45);
+} */
+.vpc-video-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  height: 70vh;
+  box-shadow: var(--shadow-md);
+}
+.vpc-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  cursor: pointer;
+}
+.vpc-controls {
+  display: flex;
+  align-items: center;
+  /* gap: .65rem; */
+  flex-direction: column;
+  width: 100%;
+  /* align-items: flex-start; */
+  gap: 8px;
+  padding: 4px 16px;
+  /* flex-wrap: wrap; */
+}
+.label .entry-headline {
+  /* margin-bottom: 8px!important; */
+  font-size: 34px !important;
+}
+.vpc-subtitle {
+  margin: 0;
+}
+.buttons-group {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: all .2s ease;
+}
+/* Allow hover interactions; visibility of button gated by hide-hover flag */
+.video-player-card:hover .buttons-group{ pointer-events: auto; }
+.video-player-card:hover .buttons-group:not([data-hide-hover='true']) .vpc-btn { opacity: 1; }
+/* Control visibility on the button itself (not the container) */
+.vpc-btn { opacity: 0; transition: opacity .2s ease, transform .1s ease; }
+.buttons-group[data-flash='true'] { pointer-events: auto; }
+.buttons-group[data-flash='true'] .vpc-btn { opacity: 1; }
+.vpc-btn {
+  background: none;
+  color: var(--text);
+  /* padding: 8px; */
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  line-height: 1;
+  transition: all .1s ease;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+}
+.vpc-btn span {
+  font-size: 64px;
+}
+.vpc-btn:hover {
+  /* background: #262a30; */
+  opacity: 0.7;
+  transform: scale(1.2);
+}
+.vpc-time {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  opacity: .8;
+  text-align: center;
+}
+.vpc-progress {
+  flex: 1 1 140px;
+  appearance: none;
+  height: 6px;
+  background: var(--text);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.vpc-progress::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  cursor: pointer;
+}
+.vpc-volume {
+  width: 90px;
+  appearance: none;
+  height: 6px;
+  background: #444;
+  border-radius: 4px;
+}
+.vpc-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,.35);
+  cursor: pointer;
+}
+@media (max-width: 640px) {
+  .vpc-controls { gap: .5rem; }
+  .vpc-btn { padding: .4rem .6rem; }
+}
+.vpc-progress-track {
+  position: relative;
+  height: 8px;
+  background: #ffffff4f;
+  border-radius: 4px;
+  cursor: pointer;
+  flex: 1 1 160px;
+  transition: all 0.3s ease;
+}
+.vpc-progress-track:hover { background: #575859; }
+.vpc-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--text);
+  border-radius: 4px;
+  width: 0;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+.vpc-progress-track[data-dragging='true'] .vpc-progress-fill { transition: none; }
+/* Remove default focus outlines in the video player card */
+.video-player-card:focus,
+.video-player-card:focus-visible {
+  outline: none;
+}
+.video-player-card .vpc-btn:focus,
+.video-player-card .vpc-btn:focus-visible {
+  outline: none;
+}
+.video-player-card .vpc-progress-track:focus,
+.video-player-card .vpc-progress-track:focus-visible {
+  outline: none;
+}

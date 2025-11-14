@@ -19,6 +19,7 @@
   will-change: opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
+  pointer-events: all;
 }
 
 /* Hidden by default; will fade in after scrolling beyond hero threshold */
@@ -45,6 +46,7 @@ html.past-hero .glass-surface { opacity: 1; pointer-events: auto; }
   border-radius: inherit;
   position: relative;
   z-index: 1;
+  pointer-events: all;
 }
 
 .glass-surface--svg {

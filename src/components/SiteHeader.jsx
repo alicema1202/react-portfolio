@@ -26,12 +26,11 @@ export default function SiteHeader() {
           const goingDown = y > lastY.current
           const nearTop = y < 10
           if (nearTop) setHidden(false)
-          else if (goingDown && y > 220) setHidden(true)
+          else if (goingDown && y > 100) setHidden(true)
           else setHidden(false)
-          // Hysteresis around 200px to avoid rapid toggle flicker
           let nextPastHero = pastHeroRef.current
-          if (!pastHeroRef.current && y >= 220) nextPastHero = true
-          else if (pastHeroRef.current && y <= 180) nextPastHero = false
+          if (!pastHeroRef.current && y >= 100) nextPastHero = true
+          else if (pastHeroRef.current && y <= 99) nextPastHero = false
           if (nextPastHero !== pastHeroRef.current) {
             pastHeroRef.current = nextPastHero
             setPastHero(nextPastHero)
@@ -78,6 +77,14 @@ export default function SiteHeader() {
     setHidden(false)
     setMobileOpen(false)
   setDropdownOpen(false)
+    // Clear focus/active state if a header nav item remains focused across routes
+    try {
+      const nav = document.getElementById('primary-nav')
+      const ae = document.activeElement
+      if (nav && ae && nav.contains(ae) && typeof ae.blur === 'function') {
+        ae.blur()
+      }
+    } catch (_) {}
     const scroller = document.querySelector('.app-main') || window
     const y = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
   const initialPast = y >= 220 ? true : y <= 180 ? false : pastHeroRef.current
@@ -149,7 +156,6 @@ export default function SiteHeader() {
         >
           <div className="nav-item has-dropdown">
             <a
-              href="/#selected-work"
               onClick={(e) => {
                 if (window.innerWidth <= 900) {
                   e.preventDefault()
@@ -164,16 +170,16 @@ export default function SiteHeader() {
             >
               Work <span className="material-icons-round caret" aria-hidden="true">expand_more</span>
             </a>
-            <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}>  
-              <a href="/visionfusion" onClick={handleNavClick}>VisionFusion</a>
-              <a href="/#other-work" onClick={handleNavClick}>Pegasystems</a>
-              <a href="/#other-work" onClick={handleNavClick}>Seven Seas</a>
-              <a href="/#other-work" onClick={handleNavClick}>Kiosk on Tour</a>
+            <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}>
+              <Link to="/visionfusion" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>VisionFusion</Link>
+              <Link to="/pega" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Pegasystems</Link>
+              <Link to="/sevenseas" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Seven Seas</Link>
+              <Link to="/kiosk" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Kiosk on Tour</Link>
             </div>
           </div>
-          <a href="/#other-work" onClick={handleNavClick}>About</a>
-          <a href="/#other-work" onClick={handleNavClick}>Resume</a>
-          <a href="#contact" onClick={handleNavClick}>Contact</a>
+          <Link to="/about">About</Link>
+          <Link to="/resume">Resume</Link>
+          <Link to="/contact">Contact</Link>
         </nav>
         {/* Mobile menu toggle moved to the right side */}
         <button

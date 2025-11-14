@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom'
 import App from './App'
 import CaseStudy from './pages/CaseStudy'
+import About from './pages/About'
+import Resume from './pages/Resume'
+import Contact from './pages/Contact'
 import './styles.css'
 
 import SiteHeader from './components/SiteHeader'
@@ -35,6 +38,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <App /> },
       { path: '/:id', element: <CaseStudy /> },
+      { path: '/about', element: <About /> },
+      { path: '/resume', element: <Resume /> },
+      { path: '/contact', element: <Contact /> },
       { path: '*', element: <App /> },
     ],
   },
