@@ -11,72 +11,72 @@ import VideoPlayerCard from '../components/VideoPlayerCard'
 const items = [
     {
       id: "1",
-      img: "../public/static/images/M1.jpg",
+      img: "static/images/M1.jpg",
       height: 350,
     },
     {
       id: "2",
-      img: "../public/static/images/M2.jpg",
+      img: "static/images/M2.jpg",
       height: 550,
     },
     {
       id: "3",
-      img: "../public/static/images/M3.jpg",
+      img: "static/images/M3.jpg",
       height: 700,
     },
     {
       id: "4",
-      img: "../public/static/images/M4.jpg",
+      img: "static/images/M4.jpg",
       height: 500,
     },
     {
       id: "5",
-      img: "../public/static/images/M5.jpg",
+      img: "static/images/M5.jpg",
       height: 600,
     },
     {
       id: "6",
-      img: "../public/static/images/M6.jpg",
+      img: "static/images/M6.jpg",
       height: 500,
     },
     {
       id: "7",
-      img: "../public/static/images/M7.jpg",
+      img: "static/images/M7.jpg",
       height: 480,
     },
     {
       id: "8",
-      img: "../public/static/images/M8.jpg",
+      img: "static/images/M8.jpg",
       height: 500,
     },
     {
       id: "9",
-      img: "../public/static/images/M9.jpg",
+      img: "static/images/M9.jpg",
       height: 300,
     },
     {
       id: "10",
-      img: "../public/static/images/M10.jpg",
+      img: "static/images/M10.jpg",
       height: 650,
     },
     {
       id: "11",
-      img: "../public/static/images/M11.jpg",
+      img: "static/images/M11.jpg",
       height: 500,
     },
     {
       id: "12",
-      img: "../public/static/images/M12.jpg",
+      img: "static/images/M12.jpg",
       height: 600,
     },
     {
       id: "13",
-      img: "../public/static/images/M13.jpg",
+      img: "static/images/M13.jpg",
       height: 600,
     },
     {
       id: "14",
-      img: "../public/static/images/M14.jpg",
+      img: "static/images/M14.jpg",
       height: 600,
     },
     
