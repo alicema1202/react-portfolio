@@ -47,6 +47,7 @@ html.past-hero .glass-surface { opacity: 1; pointer-events: auto; }
   position: relative;
   z-index: 1;
   pointer-events: all;
+  height: min-content;
 }
 
 .glass-surface--svg {

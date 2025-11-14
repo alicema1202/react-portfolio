@@ -41,6 +41,8 @@ export default function VideoPlayerCard({
   const [flashControls, setFlashControls] = useState(false)
   const flashTimerRef = useRef(null)
   const [hideHover, setHideHover] = useState(false)
+  const firstFramePrimedRef = useRef(false)
+  const isSafari = typeof navigator !== 'undefined' && /safari/i.test(navigator.userAgent) && !/chrome|crios|android/i.test(navigator.userAgent)
   // Format time mm:ss
   const fmt = (t) => {
     if (!isFinite(t)) return '0:00'
@@ -175,21 +177,55 @@ export default function VideoPlayerCard({
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
+    // Ensure inline playback flags for iOS Safari
+    try {
+      v.setAttribute('playsinline', 'true')
+      v.setAttribute('webkit-playsinline', 'true')
+    } catch {}
+    // Safari: force fuller buffering so a first frame can render
+    if (isSafari && !autoPlay) {
+      try { v.preload = 'auto' } catch {}
+      try { v.load() } catch {}
+    }
     const onLoaded = () => setDuration(v.duration || 0)
     const onTime = () => setCurrent(v.currentTime || 0)
     const onPlayEv = () => { setPlaying(true); onPlay && onPlay() }
     const onPauseEv = () => { setPlaying(false); onPause && onPause() }
     const onFsChange = () => setIsFullscreen(!!document.fullscreenElement)
+    const primeFirstFrame = () => {
+      if (!v || autoPlay) return
+      if (firstFramePrimedRef.current) return
+      // If we have enough data, perform a tiny seek to force Safari to render frame 0
+      if (v.readyState >= 2) {
+        const original = v.currentTime || 0
+        let reverted = false
+        const onSeeked = () => {
+          if (!reverted) {
+            reverted = true
+            try { v.currentTime = original } catch {}
+          }
+          v.removeEventListener('seeked', onSeeked)
+        }
+        v.addEventListener('seeked', onSeeked)
+        try { v.currentTime = Math.min((v.duration || 1), original === 0 ? 0.000001 : original) } catch {}
+        firstFramePrimedRef.current = true
+      }
+    }
+  const onLoadedData = () => primeFirstFrame()
     v.addEventListener('loadedmetadata', onLoaded)
     v.addEventListener('timeupdate', onTime)
     v.addEventListener('play', onPlayEv)
     v.addEventListener('pause', onPauseEv)
+    v.addEventListener('loadeddata', onLoadedData)
     document.addEventListener('fullscreenchange', onFsChange)
+    // Try once in case readyState is already sufficient
+    primeFirstFrame()
     return () => {
       v.removeEventListener('loadedmetadata', onLoaded)
       v.removeEventListener('timeupdate', onTime)
       v.removeEventListener('play', onPlayEv)
       v.removeEventListener('pause', onPauseEv)
+      v.removeEventListener('loadeddata', onLoadedData)
       document.removeEventListener('fullscreenchange', onFsChange)
     }
   }, [onPlay, onPause])

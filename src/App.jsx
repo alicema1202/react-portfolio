@@ -14,6 +14,7 @@ export default function App() {
       <main id="main">
         <WorkSection variant="select" title="Selected Work" maxItems={4} />
         <WorkSection variant="other" title="More Projects" maxItems={6} />
+        <SiteFooter />
       </main>
       <GradualBlur
         target="parent"
@@ -26,7 +27,7 @@ export default function App() {
         opacity={1}
       />
 
-  <SiteFooter />
+  
     </>
   )
 }
