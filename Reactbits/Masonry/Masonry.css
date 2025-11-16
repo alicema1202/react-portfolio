@@ -28,11 +28,13 @@
   /* Reveal baseline */
   opacity: 0;
   filter: blur(10px);
-  transition: opacity .5s ease, filter .5s ease;
+  transform: translateY(30px);
+  transition: all 0.5s ease;
 }
 
 /* When wrapper is visible, fade/defocus the inner image */
 .item-wrapper.is-visible > .item-img {
   opacity: 1;
   filter: blur(0);
+  transform: translateY(0);
 }

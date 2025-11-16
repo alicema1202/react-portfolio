@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { use, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { selectWork, otherWork } from '../data/work'
 import Carousel from '../components/Carousel'
@@ -25,13 +25,10 @@ export default function CaseStudy() {
   
 
   if (!item) {
-    return (
-      <main className="container" style={{ padding: '3rem 0' }}>
-        <h1>Case study not found</h1>
-        <p>The requested case study doesn’t exist.</p>
-        <p><Link to="/">Back to home</Link></p>
-      </main>
-    )
+    useEffect(() => {
+      navigate("/404", { replace: true })
+    }, [])
+    return null
   }
 
   const sectionIds = (item?.sections?.map(s => s.id) || [])
@@ -202,6 +199,10 @@ export default function CaseStudy() {
                             <li key={idx}>{text}</li>
                           ))}
                         </ul>
+                      )
+                    case 'subheading':
+                      return (
+                        <h3 key={i} className="cs-subheading">{block.text}</h3>
                       )
                     default:
                       return null

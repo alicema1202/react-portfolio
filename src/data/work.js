@@ -13,7 +13,8 @@ export const selectWork = [
       headline: 'AI image generation lacks the flexibility for iterative design workflows',
       body: [
         'As AI image generation tools become increasingly popular and accessible, users are facing a growing problem: these tools often produce results that don’t match what they want, leading to frustration. Current tools lack flexibility and give users little control over the creative process. This forces users into a tedious cycle of regenerating images until they get something closer to what they actually need.',
-        { type: 'quote', text: 'How might we enable iterative design workflows in AI image generation?' }
+        { type: 'quote', text: 'How might we enable iterative design workflows in AI image generation?' },
+        { type: 'subheading', text: 'heyyy'}
       ]
     },
     {

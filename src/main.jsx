@@ -6,7 +6,10 @@ import CaseStudy from './pages/CaseStudy'
 import About from './pages/About'
 import Resume from './pages/Resume'
 import Contact from './pages/Contact'
+import ThankYou from './pages/ThankYou'
+import NotFound from './pages/NotFound'
 import './styles.css'
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 
 import SiteHeader from './components/SiteHeader'
 import ChatbotSidebar from './components/ChatbotSidebar'
@@ -41,7 +44,8 @@ const router = createBrowserRouter([
       { path: '/about', element: <About /> },
       { path: '/resume', element: <Resume /> },
       { path: '/contact', element: <Contact /> },
-      { path: '*', element: <App /> },
+      { path: '/thankyou', element: <ThankYou /> },
+      { path: '/404', element: <NotFound /> },
     ],
   },
 ])

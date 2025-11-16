@@ -14,12 +14,13 @@ export default function Resume() {
   const sections = [
     {
       id: 'education',
-      title: '📘 Education',
+      title: 'Education',
+      emoji: '📘',
       entries: [
         {
           location: 'University of California, San Diego',
           role: 'Bachelor of Science',
-          setting: 'Sep 2021  Jun 2025 · La Jolla, CA',
+          setting: 'Sep 2021 - Jun 2025 · La Jolla, CA',
           bullets: [
             'Major: Cognitive Science (Interaction Design)',
             'Minors: Computer Science, Design',
@@ -29,8 +30,9 @@ export default function Resume() {
       ]
     },
     {
-      id: 'professional experience',
-      title: '👩🏻‍💻 Professional Experience',
+      id: 'professional-experience',
+      title: 'Professional Experience',
+      emoji: '👩🏻‍💻',
       entries: [
         {
           location: 'Housweet',
@@ -67,8 +69,9 @@ export default function Resume() {
       ]
     },
     {
-      id: 'academic experience',
-      title: '🏫 Academic Experience',
+      id: 'academic-experience',
+      title: 'Academic Experience',
+      emoji: '🏫',
       entries: [
         {
           location: 'Design Co UP-Grade',
@@ -105,7 +108,8 @@ export default function Resume() {
     },
     {
       id: 'awards',
-      title: '🏆 Awards',
+      title: 'Awards',
+      emoji: '🏆',
       entries: [
         {
           location: 'Pegasystems Intern Hackathon',
@@ -127,6 +131,7 @@ export default function Resume() {
     {
       id: 'skills',
       title: 'Skills',
+      emoji: '🛠️',
       entries: [
         {
           location: 'Design + Research',
@@ -183,7 +188,7 @@ export default function Resume() {
           <article className="cs-content">
             {sections.map(sec => (
               <section id={sec.id} key={sec.id}>
-                <h2 className="resume-section-headline">{sec.title}</h2>
+                <h2 className="resume-section-headline">{sec.emoji} {sec.title}</h2>
                 <hr className="section-separator" />
                 {Array.isArray(sec.entries) ? (
                   sec.entries.map((entry, i) => (

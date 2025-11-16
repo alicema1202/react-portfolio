@@ -59,14 +59,20 @@ export default function CaseAside({
     }
   }
 
+  // ------------------------------------------
+  // Main scroll logic
+  // ------------------------------------------
   useEffect(() => {
     scrollerRef.current = document.querySelector(scrollerSelector) || window
     const scroller = scrollerRef.current
+
     computePositions()
     computeContentStart()
 
     let ticking = false
     const onScroll = () => {
+      // eslint-disable-next-line no-console
+    //   console.log('[debug] onScroll fired')
       if (!ticking) {
         requestAnimationFrame(() => {
           const list = positionsRef.current
@@ -74,6 +80,7 @@ export default function CaseAside({
           const y = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
           const prevY = lastScrollYRef.current
           const goingUp = y < prevY
+
           if (goingUp !== scrollingUpRef.current) {
             scrollingUpRef.current = goingUp
             const asideEl = asideRef.current
@@ -87,7 +94,7 @@ export default function CaseAside({
               }
             }
           }
-          // Near top: force no offset
+
           const startY = Math.max(0, contentStartRef.current - 10)
           if (y <= startY) {
             const asideEl = asideRef.current
@@ -96,20 +103,55 @@ export default function CaseAside({
               asideEl.style.setProperty('--aside-offset', '0px')
             }
           }
+
           // Section activation
           const viewportH = scroller === window ? window.innerHeight : scroller.clientHeight
           const activationBias = scrollingUpRef.current ? biasUpOffset : 0
           const anchorY = y + headerOffset + 8 + activationBias
           let current = null
-          // Prefer containment: anchor within [sec.top, activeEnd)
-          for (let i = 0; i < list.length; i++) {
+
+          for (let i = 0; i < list.length - 1; i++) {
             const sec = list[i]
-            const nextTop = i < list.length - 1 ? list[i + 1].top : Number.POSITIVE_INFINITY
+            const nextTop = list[i + 1].top
             const paddedEnd = sec.top + Math.max(sec.height || 0, minActiveHeight)
             const activeEnd = Math.min(nextTop - 1, paddedEnd)
-            if (anchorY >= sec.top && anchorY < activeEnd) { current = sec; break }
+            if (anchorY >= sec.top && anchorY < activeEnd) {
+              current = sec
+              break
+            }
           }
-          // Fallback: choose the last section whose top <= anchor
+
+          // Always check footer for last section activation and logging
+          const lastSec = list[list.length - 1]
+          const footer = document.querySelector('footer, .site-footer')
+          let atFooter = false
+          if (!footer) {
+            // eslint-disable-next-line no-console
+            // console.log('[debug] footer not found')
+          } else {
+            if (scroller === window) {
+              const pageBottom = (window.scrollY || window.pageYOffset) + window.innerHeight
+              const footerBottom = footer.offsetTop + footer.offsetHeight
+              // Always log for debug
+              // eslint-disable-next-line no-console
+            //   console.log('[debug] pageBottom:', pageBottom, 'footerBottom:', footerBottom, 'atFooter:', pageBottom >= footerBottom - 2)
+              atFooter = pageBottom >= footerBottom - 2
+              if (atFooter) {
+                // eslint-disable-next-line no-console
+                // console.log('bottom of page reached')
+                current = lastSec
+              }
+            } else {
+              // For custom scroller, fallback to previous logic
+              const rect = footer.getBoundingClientRect()
+              const scrollerRect = scroller.getBoundingClientRect()
+              atFooter = (scrollerRect.top + scroller.clientHeight) >= rect.bottom - 2
+              if (atFooter) {
+                current = lastSec
+              }
+            }
+          }
+
           if (!current) {
             current = list[0]
             for (let i = 0; i < list.length; i++) {
@@ -118,12 +160,7 @@ export default function CaseAside({
               else break
             }
           }
-          const last = list[list.length - 1]
-          // Near bottom: force last section active only if anchor is within/past last section
-          if (y + viewportH >= last.bottom - 1) {
-            const anchorWithinLast = anchorY >= last.top - 4
-            if (anchorWithinLast) current = last
-          }
+
           if (current?.id) setActive(current.id)
           lastScrollYRef.current = y
           ticking = false
@@ -132,14 +169,22 @@ export default function CaseAside({
       }
     }
 
-    const onResize = () => { computePositions(); computeContentStart(); onScroll() }
+    const onResize = () => {
+      computePositions()
+      computeContentStart()
+      onScroll()
+    }
+
     scroller.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize)
     window.addEventListener('load', onResize)
     window.addEventListener('orientationchange', onResize)
+
     onResize()
+
     if (ids[0]) setActive(ids[0])
     lastScrollYRef.current = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
+
     return () => {
       scroller.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
@@ -149,35 +194,70 @@ export default function CaseAside({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollerSelector, contentSelector, headerOffset, biasUpOffset, offsetPadding, minActiveHeight, JSON.stringify(ids)])
 
-  // Recompute on external watch key (e.g., route change)
+  // Recompute on external watch key
   useEffect(() => {
     computePositions()
     computeContentStart()
   }, [watchKey])
 
+  // ResizeObserver for reveal animations
+  useEffect(() => {
+    const ro = new ResizeObserver(() => {
+      computePositions()
+      computeContentStart()
+    })
+
+    ids.forEach(id => {
+      const el = document.getElementById(id)
+      if (el) ro.observe(el)
+    })
+
+    return () => ro.disconnect()
+  }, [ids])
+
+  // Recompute 500ms after mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      computePositions()
+      computeContentStart()
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // ------------------------------------------
+  // Anchor click handler (first-click safe)
+  // ------------------------------------------
   const internalAnchorClick = (e) => {
     const href = e.currentTarget.getAttribute('href')
     if (!href?.startsWith('#')) return
     const target = document.querySelector(href)
     const scroller = scrollerRef.current || document.querySelector(scrollerSelector) || window
-    if (target) {
-      e.preventDefault()
+    if (!target) return
+
+    e.preventDefault()
+    history.replaceState(null, '', href)
+
+    // Delay scroll slightly to ensure sections have fully rendered
+    setTimeout(() => {
+      computePositions()
+      computeContentStart()
+
       const baseTop = scroller === window ? 0 : scroller.getBoundingClientRect().top
       const yNow = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
-      const targetTopAbs = target.getBoundingClientRect().top - baseTop + yNow
-      const isUp = targetTopAbs < yNow
-      const offset = isUp ? biasUpOffset : 0
+      const rect = target.getBoundingClientRect()
+      const targetTopAbs = rect.top - baseTop + yNow
+      const offset = targetTopAbs < yNow ? biasUpOffset : 0
       const yTarget = Math.max(0, targetTopAbs - offset)
+
       if (scroller === window) window.scrollTo({ top: yTarget, behavior: 'smooth' })
       else scroller.scrollTo({ top: yTarget, behavior: 'smooth' })
-      history.replaceState(null, '', href)
-  // Optimistically set active to the target section for immediate feedback
-  const id = href.slice(1)
-  if (id) setActive(id)
-    }
+
+      setActive(href.slice(1))
+    }, 50) // adjust delay as needed for your animations
   }
+
   return (
-  <aside className="case-aside" aria-label={ariaLabel} ref={asideRef}>
+    <aside className="case-aside" aria-label={ariaLabel} ref={asideRef}>
       <nav className="toc">
         {onBack ? (
           <button
@@ -197,15 +277,16 @@ export default function CaseAside({
             <span>Back</span>
           </button>
         ) : null}
+
         <ul>
-      {sections.map(sec => (
+          {sections.map(sec => (
             <li key={sec.id}>
               <a
-        className={(controlledActiveId ?? internalActive)===sec.id ? 'active' : ''}
-        onClick={onAnchorClick || internalAnchorClick}
+                className={(controlledActiveId ?? internalActive) === sec.id ? 'active' : ''}
+                onClick={onAnchorClick || internalAnchorClick}
                 href={`#${sec.id}`}
               >
-                {sec.id}
+                {sec.title}
               </a>
             </li>
           ))}

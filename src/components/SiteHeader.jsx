@@ -167,19 +167,20 @@ export default function SiteHeader() {
               aria-haspopup="true"
               aria-expanded={dropdownOpen ? 'true' : 'false'}
               aria-controls="work-submenu"
+              className={['/visionfusion','/pega','/sevenseas','/kiosk'].includes(pathname)}
             >
               Work <span className="material-icons-round caret" aria-hidden="true">expand_more</span>
             </a>
-            <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}>
-              <Link to="/visionfusion" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>VisionFusion</Link>
-              <Link to="/pega" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Pegasystems</Link>
-              <Link to="/sevenseas" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Seven Seas</Link>
-              <Link to="/kiosk" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }}>Kiosk on Tour</Link>
+            <div id="work-submenu" className={`dropdown ${dropdownOpen ? 'is-open' : ''}`}> 
+              <Link to="/visionfusion" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }} className={pathname==='/visionfusion'?'active':''}>VisionFusion</Link>
+              <Link to="/pega" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }} className={pathname==='/pega'?'active':''}>Pegasystems</Link>
+              <Link to="/sevenseas" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }} className={pathname==='/sevenseas'?'active':''}>Seven Seas</Link>
+              <Link to="/kiosk" onClick={() => { setDropdownOpen(false); setMobileOpen(false) }} className={pathname==='/kiosk'?'active':''}>Kiosk on Tour</Link>
             </div>
           </div>
-          <Link to="/about">About</Link>
-          <Link to="/resume">Resume</Link>
-          <Link to="/contact">Contact</Link>
+          <Link to="/about" className={pathname==='/about'?'active':''}>About</Link>
+          <Link to="/resume" className={pathname==='/resume'?'active':''}>Resume</Link>
+          <Link to="/contact" className={pathname==='/contact'?'active':''}>Contact</Link>
         </nav>
         {/* Mobile menu toggle moved to the right side */}
         <button

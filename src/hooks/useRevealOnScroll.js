@@ -18,16 +18,31 @@ export default function useRevealOnScroll() {
     const scroller = document.querySelector('.app-main') || null
     const root = document.querySelector('.app-main') || document
 
+    // Track timeouts so we can clean them up on unmount
+    const timers = new Set()
+    const scheduleResetDelay = (el) => {
+      const id = window.setTimeout(() => {
+        // Reset reveal delay so subsequent transitions aren't offset
+        if (el && el.style) {
+          el.style.setProperty('--reveal-delay', '0ms')
+          // Force-clear any transition-delay inherited from class rules
+          el.style.setProperty('transition-delay', '0ms')
+        }
+        timers.delete(id)
+      }, 1000)
+      timers.add(id)
+    }
+
     const selector = [
-      'h1','h2','h3','h4','p','li','figure','section','article',
-      '.button','.work-card','.info-card','.carousel','.hero .message','hr','img','.meta-item',
+      'h1','h2','h3','h4','p','li','figure','article', 'label', '.contact-card',
+      '.button','.work-card','.info-card','.carousel','.hero .message', '.bubble', 'hr','img:not(.memoji)', '.text-tick', '.meta-item',
       // Video player card + key inner elements to ensure visible reveal
       '.video-player-card',
       '.video-player-card .vpc-video-wrapper',
       '.video-player-card .glass-surface',
       // Ensure thumbnails in work cards reveal as well
       '.work-card .thumb', '.work-card .thumb img', '.work-card .thumb-video',
-      '.cs-content'
+      '.cs-content','p a'
     ].join(',')
 
     const applyStagger = (els) => {
@@ -46,6 +61,7 @@ export default function useRevealOnScroll() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('reveal-visible')
+          scheduleResetDelay(entry.target)
           ioDefault.unobserve(entry.target)
         }
       })
@@ -56,6 +72,7 @@ export default function useRevealOnScroll() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('reveal-visible')
+          scheduleResetDelay(entry.target)
           ioContainer.unobserve(entry.target)
         }
       })
@@ -84,6 +101,7 @@ export default function useRevealOnScroll() {
             const inView = r.bottom > scrollerRect.top && r.top < scrollerRect.bottom
             if (inView) {
               el.classList.add('reveal-visible')
+              scheduleResetDelay(el)
               ;(el.matches('.cs-content') ? ioContainer : ioDefault).unobserve(el)
             }
           })
@@ -122,6 +140,9 @@ export default function useRevealOnScroll() {
 
     mo.observe(root, { childList: true, subtree: true })
 
-  return () => { ioDefault.disconnect(); ioContainer.disconnect(); mo.disconnect() }
+  return () => {
+    ioDefault.disconnect(); ioContainer.disconnect(); mo.disconnect()
+    timers.forEach(id => clearTimeout(id)); timers.clear()
+  }
   }, [pathname])
 }
