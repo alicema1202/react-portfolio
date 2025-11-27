@@ -13,7 +13,10 @@ export default function WorkSection({ variant, title, maxItems }) {
   return (
     <section id={sectionId} className="work-section" aria-labelledby={`${sectionId}-title`}>
       <div className="container">
-        <h2 id={`${sectionId}-title`}>{title}</h2>
+        <div style={{display: 'flex', width: '100%', gap: '16px', marginBottom: '24px', alignItems: 'center'}}>
+          <h2 id={`${sectionId}-title`} style={{textWrap: 'nowrap', marginBottom: '0'}}>{title}</h2>
+          <hr className='section-separator' style={{width: '100%'}}></hr>
+        </div>
         <WorkGrid items={items} variant={gridVariant} />
       </div>
     </section>

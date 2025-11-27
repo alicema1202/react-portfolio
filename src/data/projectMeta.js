@@ -3,11 +3,35 @@
 
 export const projectMeta = {
   visionfusion: {
-    logo: 'https://www.alicemadesign.com/images/visionfusion-logo.png',
-    heroImage: 'https://www.alicemadesign.com/images/visionfusion-thumb.png',
+    logo: 'static/images/visionfusion-logo.png',
+    heroImage: 'static/images/visionfusion-thumb.png',
     purpose: 'Selectively editing AI-generated images through object detection',   // e.g., 'Selective object-level editing concept'
     role: 'UX Design, UX Research, Visual Design',      // e.g., 'Product Designer'
-    duration: 'November - December 2024',  // e.g., '2 weeks'
+    duration: 'Nov - Dec 2024',  // e.g., '2 weeks'
+    durationWidth: '200px',
+  },
+  pega: {
+    logo: 'static/images/pega-white-logo.png',
+    heroImage: 'static/images/pega-additional-info-screen.png',
+    purpose: 'Aligning UI/UX patterns for Constellation Design System at Pega',
+    role: 'UX Design, UX Research, Visual Design',
+    duration: 'May - Aug 2023',
+    durationWidth: '200px',
+  },
+  sevenseas: {
+    logo: 'https://www.alicemadesign.com/images/pega-logo.png',
+    heroImage: 'https://www.alicemadesign.com/images/pega-thumb.png',
+    purpose: 'Improving design system and aligning UX patterns at Pegasystems',
+    role: 'UX Design, UX Research, Visual Design',
+    duration: 'May - Aug 2023',
+    durationWidth: '294px',
+  },
+  kiosk: {
+    logo: 'https://www.alicemadesign.com/images/pega-logo.png',
+    heroImage: 'https://www.alicemadesign.com/images/pega-thumb.png',
+    purpose: 'Improving design system and aligning UX patterns at Pegasystems',
+    role: 'UX Design, UX Research, Visual Design',
+    duration: 'November - December 2024',
     durationWidth: '294px',
   },
   // Add other projects here, e.g.:

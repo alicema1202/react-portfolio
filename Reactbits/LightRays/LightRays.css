@@ -8,9 +8,29 @@
   height: 100dvh;  /* dynamic viewport height (newer browsers) */
   pointer-events: none;
   z-index: 140; /* above site content and header, below modal/menu overlays and grain */
-  /* overflow: hidden; */
-  mix-blend-mode: lighten;
+  overflow: visible;
+  mix-blend-mode: screen;
   will-change: opacity, transform;
+  opacity: 0.7;
   transform: translateZ(0);
   backface-visibility: hidden;
+  /* background: black; */
+  /* top: -50px; */
+  /* transition: width 0.3s ease; */
+}
+.light-rays-container canvas {
+  height: 100%!important;
+  overflow: visible;
+}
+.light-rays-container::after {
+  height: 100vh;
+  width: 200vw;
+  content: '';
+  position: absolute;
+  bottom: calc(-100vh + 200px);
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+  filter: blur(100px);
 }

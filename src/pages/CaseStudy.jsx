@@ -3,6 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { selectWork, otherWork } from '../data/work'
 import Carousel from '../components/Carousel'
 import InfoCards from '../components/InfoCards'
+import SideCards from '../components/SideCards'
+import StackCards from '../components/StackCards'
 import QuoteBlock from '../components/QuoteBlock'
 import SiteFooter from '../components/SiteFooter'
 import CaseAside from '../components/CaseAside'
@@ -39,19 +41,22 @@ export default function CaseStudy() {
     const href = e.currentTarget.getAttribute('href')
     if (!href?.startsWith('#')) return
     const target = document.querySelector(href)
-    const scroller = scrollerRef.current || document.querySelector('.app-main') || window
+    const scroller = scrollerRef?.current || document.querySelector('.app-main') || window
     if (target) {
       e.preventDefault()
       const baseTop = scroller === window ? 0 : scroller.getBoundingClientRect().top
       const yNow = scroller === window ? (window.scrollY || window.pageYOffset) : scroller.scrollTop
-  // Compute absolute target top and apply offset only when scrolling up
-  const targetTopAbs = target.getBoundingClientRect().top - baseTop + yNow
-  const isScrollingUp = targetTopAbs < yNow
-  const offset = isScrollingUp ? 100 : 0
-  const yTarget = Math.max(0, targetTopAbs - offset)
+      // Compute absolute target top and apply offset only when scrolling up
+      const targetTopAbs = target.getBoundingClientRect().top - baseTop + yNow
+      const isScrollingUp = targetTopAbs < yNow
+      const offset = isScrollingUp ? 100 : 0
+      const yTarget = Math.max(0, targetTopAbs - offset)
       if (scroller === window) window.scrollTo({ top: yTarget, behavior: 'smooth' })
       else scroller.scrollTo({ top: yTarget, behavior: 'smooth' })
-      history.replaceState(null, '', href)
+      // Remove hash from URL after scroll
+      if (window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      }
     }
   }
 
@@ -190,6 +195,10 @@ export default function CaseStudy() {
                       return (<Carousel key={i} images={block.images || []} alt={block.alt || ''} />)
                     case 'cards':
                       return (<InfoCards key={i} items={block.items || []} />)
+                    case 'stackCards':
+                      return (<StackCards key={i} items={block.items || []} />)
+                    case 'sideCards':
+                      return (<SideCards key={i} items={block.items || []} />)
                     case 'quote':
                       return (<QuoteBlock key={i} text={block.text} cite={block.cite} />)
                     case 'list':

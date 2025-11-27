@@ -8,6 +8,7 @@ import Resume from './pages/Resume'
 import Contact from './pages/Contact'
 import ThankYou from './pages/ThankYou'
 import NotFound from './pages/NotFound'
+import Aurora from '../Reactbits/Aurora/Aurora'
 import './styles.css'
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 
@@ -23,13 +24,13 @@ function RootLayout() {
     else window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [pathname])
   return (
-    <div className="app-shell">
-  <div className="app-main">
-        <SiteHeader />
-        <Outlet />
-      </div>
-  <OverlayScrollbar targetSelector=".app-main" watchKey={pathname} />
-      <ChatbotSidebar />
+  <div className="app-shell">
+    <div className="app-main">
+      <SiteHeader />
+      <Outlet />
+    </div>
+    <OverlayScrollbar targetSelector=".app-main" watchKey={pathname} />
+    <ChatbotSidebar />
     </div>
   )
 }

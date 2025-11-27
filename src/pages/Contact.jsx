@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import GradualBlur from '../../Reactbits/GradualBlur/GradualBlur'
+import LightRays from '../../Reactbits/LightRays/LightRays'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import SiteFooter from '../components/SiteFooter'
 import { useLocation } from 'react-router-dom'
@@ -26,6 +27,18 @@ export default function Contact() {
 
   return (
     <main className="contact">
+        <LightRays
+            raysOrigin="top-right"
+            raysColor="#ffffffff"
+            raysSpeed={1.5}
+            lightSpread={1.2}
+            rayLength={2}
+            followMouse={true}
+            mouseInfluence={0.3}
+            noiseAmount={0.1}
+            distortion={0}
+            className="custom-rays"
+        />
         <div className='container'>
             <div className="messages-block">
                 <img
@@ -77,7 +90,7 @@ export default function Contact() {
                 >
                     {/* Honeypot field to reduce spam */}
                     <input type="hidden" name="access_key" value="d45e5f52-19f3-4fc1-8e04-16d73cbdae9c"/>
-                    <input type="text" name="_honey" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+                    <input type="text" name="botcheck" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
                     {/* Disable Captcha and set redirect */}
                     <input type="hidden" name="redirect" value="https://alicemadesign.com/thankyou" />
                     {/* <input type="hidden" name="_template" value="table" /> */}
@@ -117,7 +130,7 @@ export default function Contact() {
                     </label>
 
                     <div>
-                    <button className="button" type="submit">Send</button>
+                    <button className="filled button" type="submit">Send</button>
                     </div>
                 </form>
             </div>

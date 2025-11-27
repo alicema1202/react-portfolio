@@ -8,11 +8,14 @@ import useRevealOnScroll from './hooks/useRevealOnScroll'
 
 export default function App() {
   useRevealOnScroll()
+  const [modalOpen, setModalOpen] = React.useState(false);
+  
   return (
     <>
+    
       <Hero />
       <main id="main">
-        <WorkSection variant="select" title="Selected Work" maxItems={4} />
+        <WorkSection variant="select" title="Selected Work ✨" maxItems={4} />
         <WorkSection variant="other" title="More Projects" maxItems={6} />
         <SiteFooter />
       </main>
@@ -26,6 +29,7 @@ export default function App() {
         exponential={true}
         opacity={1}
       />
+      
 
   
     </>

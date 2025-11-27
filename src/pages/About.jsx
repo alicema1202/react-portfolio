@@ -7,6 +7,9 @@ import SiteFooter from '../components/SiteFooter'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import TiltedCard from '../../Reactbits/TiltedCard/TiltedCard';
 import VideoPlayerCard from '../components/VideoPlayerCard'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLinkedin } from '@fortawesome/free-brands-svg-icons'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 const items = [
     {
@@ -103,28 +106,38 @@ export default function About() {
         <div className="container">
             <div className='about-section'>
                 <VideoPlayerCard
-                    title="A Slice of Life 🍰"
+                    title="A Slice of My Life 🍰"
                     // subtitle="Alice Ma"
-                    src="/static/images/mememe.mp4" /* replace with your actual video path */
-                    aspectRatio="2/3"
+                    src="/static/images/sliceoflife.mov" /* replace with your actual video path */
+                    aspectRatio="2/2"
                     autoPlay={false}
                     loop={false}
                 />
-                <div className="about-text-">
-                    <h3 className="entry-headline">Nice to meet you, I'm Alice! 👋🏻</h3>
-                    <p>As a designer, I'm interested in specializing in design systems, where I can use my knowledge of design and development to create a cohesive and consistent foundation for the user experience of products.</p>
-                    <p>I graduated from UC San Diego this Spring, where I majored in Cognitive Science with a specialization in Interaction Design, with minors in Computer Science and Design.</p>
-                    <p>When I'm not immersed in Figma for work, you can still find me on Figma doing personal projects, such as creating my own design library or working on my annual portfolio redesign!</p>
-                    <p>Outside of design, here are three fun facts about me:</p>
-                    <p>
-                       <ul>
-                            <li>I have a large cabinet filled with nail supplies, drills, dip powder, and more. My friends often joke that they've never seen my natural nails.</li>
-                            <li>My </li>
-                            <li>I'm a big fan of indie music and often attend local concerts.</li>
-                        </ul> 
-                    </p>
-                    
-                </div>
+        <div className="about-text-">
+          <h3 className="entry-headline">Nice to meet you, I'm Alice! 👋🏻</h3>
+          <p>As a designer, I'm interested in specializing in design systems, where I can use my knowledge of design and development to create a cohesive and consistent foundation for the user experience of products.</p>
+          <p>I graduated from UC San Diego this Spring, where I majored in Cognitive Science with a specialization in Interaction Design, with minors in Computer Science and Design.</p>
+          <p>When I'm not immersed in Figma for work or personal projects, you may find me doing a new set of nails 💅, catching the latest movie at AMC 🍿, or crafting new beverages to start off my day 🍵! </p>
+          {/* <p>Outside of design, here are three fun facts about me:</p>
+          <p>
+             <ul>
+              <li>I have a large cabinet filled with nail supplies! My friends have said that I could open a salon.</li>
+              <li>My </li>
+              <li>I'm a big fan of indie music and often attend local concerts.</li>
+            </ul> 
+          </p> */}
+
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <a href="https://www.linkedin.com/in/alicema1215/" className="button" target="_blank" rel="noopener noreferrer">
+              LinkedIn&nbsp;
+              <FontAwesomeIcon icon={faLinkedin} aria-hidden="true" style={{ fontSize: 24 }} /> 
+            </a>
+            <a href="mailto:alicema1202@gmail.com" className="button" target="_blank" rel="noopener noreferrer">
+              Email
+              <FontAwesomeIcon icon={faEnvelope} aria-hidden="true" style={{ fontSize: 24 }} />
+            </a>
+          </div>
+        </div>
             </div> 
             <div className='more-slices'> 
                 <h3 className="entry-headline">More Slices 🎂</h3>

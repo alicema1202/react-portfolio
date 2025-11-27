@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import LightRays from '../../Reactbits/LightRays/LightRays'
 import BlurText from '../../Reactbits/BlurText/BlurText'
+import Aurora from '../../Reactbits/Aurora/Aurora'
 
 // Reusable hero component
 // Props: 
@@ -47,7 +48,7 @@ export default function Hero({
     raysOrigin: 'top-right',
     raysColor: '#ffffffff',
     raysSpeed: 1.5,
-    lightSpread: 1.2,
+    lightSpread: 2,
     rayLength: 2,
     followMouse: true,
     mouseInfluence: 0.3,
@@ -59,7 +60,12 @@ export default function Hero({
 
   return (
     <header className={`hero ${className}`.trim()} role="banner">
-      {showRays && <LightRays {...mergedRays} />}
+      {/* {showRays && <LightRays {...mergedRays} />} */}
+      {showRays && <LightRays />}
+      {/* <Aurora 
+        colorStops={['#223b7a', '#1e306d', '#2a336f']}
+        speed={1.5}
+      /> */}
       <div className="container">
         {showMessage && (
           <div className="message incoming" aria-label="Intro message">
@@ -83,6 +89,7 @@ export default function Hero({
           <a
             href={ctaHref}
             onClick={onCtaClick}
+            target={ctaHref.startsWith('http') ? '_blank' : undefined}
             className="button"
             style={{ textDecoration: 'none'}}
           >

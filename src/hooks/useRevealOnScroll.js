@@ -34,14 +34,15 @@ export default function useRevealOnScroll() {
     }
 
     const selector = [
-      'h1','h2','h3','h4','p','li','figure','article', 'label', '.contact-card',
-      '.button','.work-card','.info-card','.carousel','.hero .message', '.bubble', 'hr','img:not(.memoji)', '.text-tick', '.meta-item',
+      'h1','h2','h3:not(.work-card-title)','h4','p','li:not(.work-card li)','figure','article', 'label', '.contact-card',
+      '.button','.work-card','.info-card','.carousel','.hero .message', '.bubble', 'hr','img:not(.memoji, .work-card img)', '.text-tick', '.meta-item',
       // Video player card + key inner elements to ensure visible reveal
       '.video-player-card',
       '.video-player-card .vpc-video-wrapper',
-      '.video-player-card .glass-surface',
+      '.video-player-card .glass-surface', '.toc button',
       // Ensure thumbnails in work cards reveal as well
-      '.work-card .thumb', '.work-card .thumb img', '.work-card .thumb-video',
+      '.work-card',
+    //   '.work-card .thumb', '.work-card .thumb img', '.work-card .thumb-video', '.year',
       '.cs-content','p a'
     ].join(',')
 

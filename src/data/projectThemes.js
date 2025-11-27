@@ -8,6 +8,27 @@ export const projectThemes = {
     brand: '#6197de',       // primary color
     accent: '#3b357b',       // secondary/accent color
   },
+  pega: {
+    brand: '#5a68a9ff',       // primary color
+    accent: '#27356eff',       // secondary/accent color
+  },
+  sevenseas: {
+    brand: '#6197de',       // primary color
+    accent: '#3b357b',       // secondary/accent color
+  },
+  kiosk: {
+    brand: '#6197de',       // primary color
+    accent: '#3b357b',       // secondary/accent color
+  },
+  mpa: {
+    brand: '#204996',       // primary color
+    accent: '#03134d',       // secondary/accent color
+  },
+  portfolio: {
+    brand: '#434c97',       // primary color
+    accent: '#181f4f',       // secondary/accent color
+  },
+  
 
   // Add more projects, e.g.:
   // 'ow-1': { brand: '#6C5CE7', accent: '#241B5B' },

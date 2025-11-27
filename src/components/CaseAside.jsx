@@ -24,6 +24,16 @@ export default function CaseAside({
   const [internalActive, setInternalActive] = useState(sections[0]?.id || '')
   const ids = useMemo(() => sections.map(s => s.id).filter(Boolean), [sections])
 
+  // Track viewport width for conditional rendering
+  const [showAside, setShowAside] = useState(() => typeof window !== 'undefined' ? window.innerWidth > 900 : true)
+  useEffect(() => {
+    const handleResize = () => {
+      setShowAside(window.innerWidth > 900)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   const setActive = (id) => {
     if (!id) return
     if (controlledActiveId == null) setInternalActive(id)
@@ -234,8 +244,8 @@ export default function CaseAside({
     const scroller = scrollerRef.current || document.querySelector(scrollerSelector) || window
     if (!target) return
 
-    e.preventDefault()
-    history.replaceState(null, '', href)
+
+  e.preventDefault()
 
     // Delay scroll slightly to ensure sections have fully rendered
     setTimeout(() => {
@@ -256,6 +266,8 @@ export default function CaseAside({
     }, 50) // adjust delay as needed for your animations
   }
 
+  if (!showAside) return null
+
   return (
     <aside className="case-aside" aria-label={ariaLabel} ref={asideRef}>
       <nav className="toc">
@@ -263,7 +275,7 @@ export default function CaseAside({
           <button
             type="button"
             className="toc-back"
-            onClick={onBack}
+            // onClick={onBack}
             aria-label="Back"
             style={{
               display: 'inline-flex',
@@ -273,8 +285,8 @@ export default function CaseAside({
               border: 0,
             }}
           >
-            <span className="material-icons-round" aria-hidden="true">chevron_left</span>
-            <span>Back</span>
+            <span onClick={onBack} className="material-icons-round" aria-hidden="true">chevron_left</span>
+            <span onClick={onBack}>Back</span>
           </button>
         ) : null}
 

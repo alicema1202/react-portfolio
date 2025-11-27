@@ -3,6 +3,7 @@ import SiteFooter from '../components/SiteFooter'
 import CaseAside from '../components/CaseAside'
 import GradualBlur from '../../Reactbits/GradualBlur/GradualBlur'
 import LightRays from '../../Reactbits/LightRays/LightRays' 
+import Hero from '../components/Hero'
 import useRevealOnScroll from '../hooks/useRevealOnScroll'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 
@@ -166,17 +167,16 @@ export default function Resume() {
   const length = sections.entries.length;
   return (
     <main className="case-study resume">
+    <Hero 
+      showMessage={false}
+      narrowTitle="My Resume"
+      wideTitle="My Resume"
+      lede=''
+      ctaLabel={<><span>View Downloadable PDF</span><span className="material-icons-round" style={{ fontSize: 18, marginLeft: 6, verticalAlign: 'middle' }} aria-hidden="true">open_in_new</span></>}
+      ctaHref='https://drive.google.com/file/d/1fI4HU3IvGx-QuhrWt8jW0HOnDhVhHOH8/view?usp=sharing'
+    />
         <LightRays
-            raysOrigin="top-right"
-            raysColor="#ffffffff"
-            raysSpeed={1.5}
-            lightSpread={1.2}
-            rayLength={2}
-            followMouse={true}
-            mouseInfluence={0.3}
-            noiseAmount={0.1}
-            distortion={0}
-            className="custom-rays"
+            showRays={false}
         />
       <div className="container">
         <div className="case-layout">
@@ -186,9 +186,12 @@ export default function Resume() {
             ariaLabel="About navigation"
           />
           <article className="cs-content">
-            {sections.map(sec => (
+            {sections.map((sec, idx) => (
               <section id={sec.id} key={sec.id}>
-                <h2 className="resume-section-headline">{sec.emoji} {sec.title}</h2>
+                <h2 className="resume-section-headline" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <span>{sec.emoji} {sec.title}</span>
+                  
+                </h2>
                 <hr className="section-separator" />
                 {Array.isArray(sec.entries) ? (
                   sec.entries.map((entry, i) => (
